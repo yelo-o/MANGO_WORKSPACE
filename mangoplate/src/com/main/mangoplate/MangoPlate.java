@@ -2,8 +2,6 @@ package com.main.mangoplate;
 
 import java.util.Scanner;
 
-import com.dao.mangoplate.ReviewController;
-//import com.dao.mangoplate.user_register;
 import com.dao.mangoplate.shopController;
 import com.dao.mangoplate.userController;
 
