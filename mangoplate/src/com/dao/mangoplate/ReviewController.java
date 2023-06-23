@@ -23,7 +23,7 @@ public class ReviewController {
 
 	//메인 메뉴
 	public void reviewPage() {
-		//DB연결 준비
+        //DB연결 준비
 		try {
 			conn = MyConnection.getConnection();
 		} catch (ClassNotFoundException | SQLException e) {
