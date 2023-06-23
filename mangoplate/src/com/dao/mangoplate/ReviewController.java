@@ -23,12 +23,6 @@ public class ReviewController {
 
 	//메인 메뉴
 	public void reviewPage() {
-		//DB연결 준비
-		try {
-			conn = MyConnection.getConnection();
-		} catch (ClassNotFoundException | SQLException e) {
-			e.printStackTrace();
-		}
 		System.out.println("메뉴: 1.리뷰 작성 | 2.리뷰 읽기 | 3.내 리뷰 보기 | 9.종료");
 		int selection =Integer.parseInt(sc.nextLine());
 		switch(selection) {
