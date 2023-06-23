@@ -1,4 +1,5 @@
 package com.dao.mangoplate;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -51,14 +52,8 @@ public class shopController {
 	public int num_max() {
 		String sql = "SELECT MAX(SHOP_NO) FROM SHOP";
 		try {
-			Class.forName("oracle.jdbc.driver.OracleDriver");
 			con = MyConnection.getConnection();
-
-		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
+		} catch (ClassNotFoundException | SQLException e) {
 			e.printStackTrace();
 		}
 		try {
@@ -82,9 +77,7 @@ public class shopController {
 		String sql = "insert into SHOP(Shop_no, shop_name, shop_state, shop_content, shop_type, ceo_id) values (?,?,?,?,?,?)";
 		try {
 			con = MyConnection.getConnection();
-		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
-		} catch (SQLException e) {
+		} catch (ClassNotFoundException | SQLException e) {
 			e.printStackTrace();
 		}
 		count = num_max();
@@ -119,10 +112,7 @@ public class shopController {
 
 		try {
 			con = MyConnection.getConnection();
-
-		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
-		} catch (SQLException e) {
+		} catch (ClassNotFoundException | SQLException e) {
 			e.printStackTrace();
 		}
 		try {
@@ -164,17 +154,11 @@ public class shopController {
 		//userController.ceo_menu(ceo_id);
 	}
 
-
-
 	public void revokeShop_Request(String user_id,int user_type) {
 		try {
-			Class.forName("oracle.jdbc.driver.OracleDriver");
 			con = MyConnection.getConnection();
-
-		} catch (ClassNotFoundException e) {
-
-		} catch (SQLException e) {
-
+		} catch (ClassNotFoundException | SQLException e) {
+			e.printStackTrace();
 		}
 		System.out.println("영업을 철회할 가게의 고유번호를 입력하세요.");
 		shop_no = Integer.parseInt(sc.nextLine());
@@ -196,12 +180,8 @@ public class shopController {
 
 	public void revokeCancel_Request(String user_id,int user_type) {
 		try {
-			Class.forName("oracle.jdbc.driver.OracleDriver");
 			con = MyConnection.getConnection();
-
-		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
-		} catch (SQLException e) {
+		} catch (ClassNotFoundException | SQLException e) {
 			e.printStackTrace();
 		}
 		System.out.println("영업 철회를 취소할 가게의 고유번호를 입력하세요.");
@@ -225,17 +205,12 @@ public class shopController {
 
 	public void modify_shopInfo(String ceo_id) {
 		menuController menu= new menuController();
-
 		String search_name = "select * from shop where ceo_id='"+ceo_id+"'";
 		int counter=1;
 		try {
 			con = MyConnection.getConnection();
-
-		} catch (ClassNotFoundException e) {
-
-
-		} catch (SQLException e) {
-
+		} catch (ClassNotFoundException | SQLException e) {
+			e.printStackTrace();
 		}
 		shop_list = new ArrayList<Shop>();
 		try {
@@ -294,7 +269,7 @@ public class shopController {
 			}finally{
 				DBConnector.close(rs, psmt, con);
 			}
-		}else if(modi_ch.equals("2")) {
+		} else if(modi_ch.equals("2")) {
 
 
 			shop =new Shop(shop_list.get(shop_ch-1).getShop_no(),shop_list.get(shop_ch-1).getShop_name(),shop_list.get(shop_ch-1).getShop_state(),shop_list.get(shop_ch-1).getShop_content(),shop_list.get(shop_ch-1).getShop_type(),shop_list.get(shop_ch-1).getCeo_id());
@@ -318,15 +293,15 @@ public class shopController {
 				} catch (SQLException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
-				}finally {
+				} finally {
 					DBConnector.close(rs, psmt, con);
 				}
 
-			}else if(menu_ch.equals("2")){
+			} else if(menu_ch.equals("2")){
 				//메뉴 수정 메소드
 				menu.menuModify(ceo_id);
 
-			}else if(menu_ch.equals("3")) {
+			} else if(menu_ch.equals("3")) {
 				//메뉴 삭제
 				menu.deleteMenu(ceo_id,shop.getShop_no());
 			}
