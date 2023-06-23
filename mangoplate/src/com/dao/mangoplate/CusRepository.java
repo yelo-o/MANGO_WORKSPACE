@@ -1,7 +1,6 @@
 package com.dao.mangoplate;
 
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -89,9 +88,11 @@ public class CusRepository
 		}else {
 			System.out.println("카테고리 번호를 입력해주세요.");
 		}
+		
+		
 		String categoryList = "select * from shop where shop_state = '1' and shop_type='"+shoptype+"'";
+        //DB연결 준비
 		try {
-			Class.forName("oracle.jdbc.driver.OracleDriver");
 			con = MyConnection.getConnection();
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
@@ -125,16 +126,12 @@ public class CusRepository
 		String search_shop = "select * from shop where shop_state = '1' and where ";
 		int counter = 1;
 		shop_list = new ArrayList<Shop>();
-		
+        //DB연결 준비
 		try {
-			Class.forName("oracle.jdbc.driver.OracleDriver");
 			con = MyConnection.getConnection();
-
 		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		try {
@@ -153,7 +150,6 @@ public class CusRepository
 				System.out.println(counter+") 가게 이름 : " +shop_name+"\n가게 소개 : "+shop_content+"\n식종 : "+shop_type);
 				counter++;
 				System.out.println("------------------------------------------------------------------");
-				
 			}
 		}catch(SQLException e) {
 		}finally {

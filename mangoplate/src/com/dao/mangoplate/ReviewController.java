@@ -11,7 +11,7 @@ import com.dto.mangoplate.Shop;
 
 public class ReviewController {
 	Scanner sc = new Scanner(System.in);
-	static int count = 0;
+	int count = 0;
 
 	Connection conn = null;
 	PreparedStatement pstmt = null;
@@ -23,13 +23,12 @@ public class ReviewController {
 
 	//메인 메뉴
 	public void reviewPage() {
-        //DB연결 준비
+		//DB연결 준비
 		try {
 			conn = MyConnection.getConnection();
 		} catch (ClassNotFoundException | SQLException e) {
 			e.printStackTrace();
 		}
-
 		System.out.println("메뉴: 1.리뷰 작성 | 2.리뷰 읽기 | 3.내 리뷰 보기 | 9.종료");
 		int selection =Integer.parseInt(sc.nextLine());
 		switch(selection) {
@@ -38,21 +37,18 @@ public class ReviewController {
 			reviewPage(); //리뷰 페이지로 다시 돌아오기
 		case 2:
 			readReaview(ceo_id);
-			reviewPage(); //리뷰 페이지로 다시 돌아오기
+			reviewPage();
 		case 3:
 			readMyReview(ceo_id);
-			reviewPage(); //리뷰 페이지로 다시 돌아오기
+			reviewPage();
 		case 9:
 			exit();
 			break;
 		}
 	}
 
-	public static int num_max() {
+	public int num_max() {
 		String sql = "SELECT MAX(review_no) FROM shop_review";
-		Connection conn = null;
-		ResultSet rs = null;
-		PreparedStatement pstmt = null;
 		try {
 			conn = MyConnection.getConnection();
 			pstmt = conn.prepareStatement(sql);
@@ -70,9 +66,18 @@ public class ReviewController {
 
 	//1. 리뷰 작성
 	public void insertReview(int shop_no, String ceo_id) {
+		//(1) DB연결 준비
+		try {
+			conn = MyConnection.getConnection();
+		} catch (ClassNotFoundException | SQLException e) {
+			e.printStackTrace();
+		}
+		
+		//(2) 입력받은 변수값을 토대로 SQL문 구성하여 실행해서 DB데이터 업데이트
 		try {
 			count = num_max();
 			count++;
+
 			String sql = "INSERT INTO shop_review(shop_no, review_no, writer, review_content,\r\n"
 					+ "review_date, review_rating)\r\n"
 					+ "VALUES(?, ?, ?, ?, SYSDATE, ?)";
@@ -100,6 +105,13 @@ public class ReviewController {
 
 	//2. 모든 리뷰 읽기
 	public void readReaview(String ceo_id) {
+		//(1) DB연결 준비
+		try {
+			conn = MyConnection.getConnection();
+		} catch (ClassNotFoundException | SQLException e) {
+			e.printStackTrace();
+		}
+		//(2) SQL문 실행 후 결과 불러오기
 		try {
 			String sql = "SELECT * FROM shop_review ORDER BY review_no DESC";
 			pstmt = conn.prepareStatement(sql);
@@ -115,27 +127,28 @@ public class ReviewController {
 				System.out.printf("%-10s%-15s%-12s%-20s%-40s\n", reviewNo, reviewWriter, reviewRating, reviewDate, reviewContent);
 				count++;
 			}
-	} catch (SQLException e) {
-		e.printStackTrace();
-	} finally {
-		MyConnection.close(rs, pstmt, conn);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			MyConnection.close(rs, pstmt, conn);
+		}
 	}
-}
 
-//3. 내 리뷰 보기
-public void readMyReview(String ceo_id) {
-//DB연결 준비
+	//3. 내 리뷰 보기
+	public void readMyReview(String ceo_id) {
+		//(1) DB연결 준비
 		try {
 			conn = MyConnection.getConnection();
 		} catch (ClassNotFoundException | SQLException e) {
 			e.printStackTrace();
 		}
-	try {
-		String sql = "SELECT * FROM shop_review WHERE writer = '"+ceo_id+"'";
-		
-		pstmt = conn.prepareStatement(sql);
-		rs = pstmt.executeQuery();
-		System.out.printf("%-10s%-15s%-12s%-20s%-40s\n", "리뷰번호", "작성자", "별점", "작성일자", "리뷰 내용");
+		//(2) SQL문 실행 후 결과 불러오기
+		try {
+			String sql = "SELECT * FROM shop_review WHERE writer = '"+ceo_id+"'";
+
+			pstmt = conn.prepareStatement(sql);
+			rs = pstmt.executeQuery();
+			System.out.printf("%-10s%-15s%-12s%-20s%-40s\n", "리뷰번호", "작성자", "별점", "작성일자", "리뷰 내용");
 			while(rs.next()) {
 				int reviewNo = rs.getInt("review_no");
 				String reviewWriter = rs.getString("writer");
@@ -145,78 +158,77 @@ public void readMyReview(String ceo_id) {
 				System.out.printf("%-10s%-15s%-12s%-20s%-40s\n", reviewNo, reviewWriter, reviewRating, reviewDate, reviewContent);
 			}
 
-		System.out.println("******************************************************************************");
-		System.out.println("*****************************************보조메뉴: 1.리뷰 수정 | 2.리뷰 삭제 | 9.종료**");
-		System.out.println("******************************************************************************");
-		System.out.println();
-		int selection = Integer.parseInt(sc.nextLine());
-		if(selection==1) { //리뷰 수정
-			modifyReview();
-		} else if(selection==2) { //리뷰 삭제
-			deleteReview();
-		}
-
-	} catch (SQLException e) {
-		e.printStackTrace();
-	} 
-	finally {
-		MyConnection.close(rs, pstmt, conn);
-	}
-
-}
-
-//3-1. 리뷰 수정
-public void modifyReview() {
-	try {
-		System.out.println("수정을 원하는 리뷰번호를 입력하세요");
-		int reviewNo = Integer.parseInt(sc.nextLine());
-
-		System.out.println("수정 내용을 입력하세요");
-		String reviewContent = sc.nextLine();
-
-		String updateSQL = "UPDATE shop_review SET review_content=? WHERE review_no=?";
-
-		pstmt = conn.prepareStatement(updateSQL);
-		pstmt.setString(1, reviewContent);
-		pstmt.setInt(2, reviewNo);
-		pstmt.executeUpdate();
-		System.out.println("리뷰 수정 완료!");
-	} catch (SQLException e) {
-		e.printStackTrace();
-	} finally {
-		MyConnection.close(rs, pstmt, conn);
-	}
-}
-
-//3-2. 리뷰 삭제
-public void deleteReview() {
-	try {
-		System.out.println("삭제를 원하는 리뷰번호를 입력하세요");
-		int reviewNo = Integer.parseInt(sc.nextLine());
-
-		String deleteSQL = "DELETE shop_review WHERE review_no = ?";
-		pstmt = conn.prepareStatement(deleteSQL);
-
-		pstmt.setInt(1, reviewNo);
-		pstmt.executeUpdate();
-		System.out.println("리뷰 삭제 완료!");
-	} catch (SQLException e) {
-		e.printStackTrace();
-	} finally {
-		MyConnection.close(rs, pstmt, conn);
-	}
-}
-
-// 종료
-public void exit() {
-	if(conn != null) {
-		try {
-			conn.close();
+			System.out.println("******************************************************************************");
+			System.out.println("*****************************************보조메뉴: 1.리뷰 수정 | 2.리뷰 삭제 | 9.종료**");
+			System.out.println("******************************************************************************");
+			System.out.println();
+			int selection = Integer.parseInt(sc.nextLine());
+			if(selection==1) { //리뷰 수정
+				modifyReview();
+			} else if(selection==2) { //리뷰 삭제
+				deleteReview();
+			}
 		} catch (SQLException e) {
+			e.printStackTrace();
+		} 
+		finally {
+			MyConnection.close(rs, pstmt, conn);
+		}
+
+	}
+
+	//3-1. 리뷰 수정
+	public void modifyReview() {
+		try {
+			System.out.println("수정을 원하는 리뷰번호를 입력하세요");
+			int reviewNo = Integer.parseInt(sc.nextLine());
+
+			System.out.println("수정 내용을 입력하세요");
+			String reviewContent = sc.nextLine();
+
+			String updateSQL = "UPDATE shop_review SET review_content=? WHERE review_no=?";
+
+			pstmt = conn.prepareStatement(updateSQL);
+			pstmt.setString(1, reviewContent);
+			pstmt.setInt(2, reviewNo);
+			pstmt.executeUpdate();
+			System.out.println("리뷰 수정 완료!");
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			MyConnection.close(rs, pstmt, conn);
 		}
 	}
-	System.out.println("** 종료 **");
-	System.exit(0);
-}
+
+	//3-2. 리뷰 삭제
+	public void deleteReview() {
+		try {
+			System.out.println("삭제를 원하는 리뷰번호를 입력하세요");
+			int reviewNo = Integer.parseInt(sc.nextLine());
+
+			String deleteSQL = "DELETE shop_review WHERE review_no = ?";
+			pstmt = conn.prepareStatement(deleteSQL);
+
+			pstmt.setInt(1, reviewNo);
+			pstmt.executeUpdate();
+			System.out.println("리뷰 삭제 완료!");
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			MyConnection.close(rs, pstmt, conn);
+		}
+	}
+
+	// 종료
+	public void exit() {
+		if(conn != null) {
+			try {
+				conn.close();
+			} catch (SQLException e) {
+			}
+		}
+		System.out.println("** 종료 **");
+		System.exit(0);
+	}
 
 }
