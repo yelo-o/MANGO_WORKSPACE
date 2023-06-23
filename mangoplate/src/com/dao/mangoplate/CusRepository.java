@@ -26,27 +26,24 @@ public class CusRepository
 	shopController shopcontroll;
 	private static int count;
 	Scanner sc = new Scanner(System.in); 
+	Connection con = null;
+	ResultSet rs = null;
+	PreparedStatement psmt = null;
 	
 	public void cusAllShopList(String user_id) {
 		String search_shop = "select * from shop where shop_state = '1'";
-		Connection con = null;
-		ResultSet rs = null;
-		PreparedStatement psmt = null;
 		int counter = 1;
 		shop_list = new ArrayList<Shop>();
-		
+		//DB연결 준비
 		try {
 			con = MyConnection.getConnection();
 		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		try {
 			psmt = con.prepareStatement(search_shop);
-			psmt.executeQuery();
 			rs = psmt.executeQuery();
 			System.out.println("------------------------------------------------------------------");
 			while(true) {
@@ -61,20 +58,13 @@ public class CusRepository
 				counter++;
 				System.out.println("------------------------------------------------------------------");
 			}
-			
-			
 		}catch(SQLException e) {
 		}finally {
-			
 			MyConnection.close(rs, psmt, con);
 		}
 	}
 	
 	public void cusCategoryShopList() {
-		
-		Connection con = null;
-		ResultSet rs = null;
-		PreparedStatement psmt = null;
 		String shoptype="???";
 		int counter = 1;
 		shop_list = new ArrayList<Shop>();
@@ -104,10 +94,8 @@ public class CusRepository
 			Class.forName("oracle.jdbc.driver.OracleDriver");
 			con = MyConnection.getConnection();
 		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		try {
@@ -135,9 +123,6 @@ public class CusRepository
 	}
 	public void cusRateHighShopList() {
 		String search_shop = "select * from shop where shop_state = '1' and where ";
-		Connection con = null;
-		ResultSet rs = null;
-		PreparedStatement psmt = null;
 		int counter = 1;
 		shop_list = new ArrayList<Shop>();
 		
