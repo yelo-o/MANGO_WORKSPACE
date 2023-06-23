@@ -66,10 +66,9 @@ public class menuController {
 		ResultSet rs = null;
 		PreparedStatement psmt = null;
 		try {
-			Class.forName("oracle.jdbc.driver.OracleDriver");
 			con = MyConnection.getConnection();
-		} catch (ClassNotFoundException e) {
-		} catch (SQLException e) {
+		} catch (ClassNotFoundException | SQLException e) {
+			e.printStackTrace();
 		}
 		
 		String search_menu = "select * from menu where shop_no = '"+shop_no+"'";
