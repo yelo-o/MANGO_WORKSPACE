@@ -1,6 +1,5 @@
 package com.dao.mangoplate;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -14,7 +13,6 @@ import com.dto.mangoplate.Shop;
 public class shopController {
 	Scanner sc = new Scanner(System.in);
 
-
 	Shop shop;
 	int shop_no;
 	String shop_name;
@@ -26,6 +24,9 @@ public class shopController {
 	int no;
 	menuController menu;
 	private static int count;
+	Connection con = null;
+	ResultSet rs = null;
+	PreparedStatement psmt = null;
 
 	public shopController(){
 	}
@@ -34,7 +35,6 @@ public class shopController {
 	}
 
 	public void ceo_page(String ceo_id) {
-
 		System.out.println("가게 이름을 적어주세요.");
 		shop_name = sc.nextLine();
 		System.out.println("가게를 소개해주세요.");
@@ -48,11 +48,8 @@ public class shopController {
 		userController.ceo_menu(ceo_id);
 	}
 
-	static public int num_max() {
+	public int num_max() {
 		String sql = "SELECT MAX(SHOP_NO) FROM SHOP";
-		Connection con = null;
-		ResultSet rs = null;
-		PreparedStatement psmt = null;
 		try {
 			Class.forName("oracle.jdbc.driver.OracleDriver");
 			con = MyConnection.getConnection();
@@ -83,18 +80,11 @@ public class shopController {
 	public void insert(Shop shop) {
 
 		String sql = "insert into SHOP(Shop_no, shop_name, shop_state, shop_content, shop_type, ceo_id) values (?,?,?,?,?,?)";
-		Connection con = null;
-		ResultSet rs = null;
-		PreparedStatement psmt = null;
 		try {
-			Class.forName("oracle.jdbc.driver.OracleDriver");
 			con = MyConnection.getConnection();
-
 		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		count = num_max();
@@ -125,20 +115,14 @@ public class shopController {
 	//가게 정보 수정
 	public void search_shop(String ceo_id) {
 		String search_id = "select * from shop where ceo_id = '"+ceo_id+"'";
-		Connection con = null;
-		ResultSet rs = null;
-		PreparedStatement psmt = null;
 		shop_list = new ArrayList<Shop>();
 
 		try {
-			Class.forName("oracle.jdbc.driver.OracleDriver");
 			con = MyConnection.getConnection();
 
 		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		try {
@@ -183,9 +167,6 @@ public class shopController {
 
 
 	public void revokeShop_Request(String user_id,int user_type) {
-		Connection con = null;
-		ResultSet rs = null;
-		PreparedStatement psmt = null;
 		try {
 			Class.forName("oracle.jdbc.driver.OracleDriver");
 			con = MyConnection.getConnection();
@@ -214,9 +195,6 @@ public class shopController {
 
 
 	public void revokeCancel_Request(String user_id,int user_type) {
-		Connection con = null;
-		ResultSet rs = null;
-		PreparedStatement psmt = null;
 		try {
 			Class.forName("oracle.jdbc.driver.OracleDriver");
 			con = MyConnection.getConnection();
@@ -250,11 +228,7 @@ public class shopController {
 
 		String search_name = "select * from shop where ceo_id='"+ceo_id+"'";
 		int counter=1;
-		Connection con = null;
-		ResultSet rs = null;
-		PreparedStatement psmt = null;
 		try {
-			Class.forName("oracle.jdbc.driver.OracleDriver");
 			con = MyConnection.getConnection();
 
 		} catch (ClassNotFoundException e) {
