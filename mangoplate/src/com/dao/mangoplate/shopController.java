@@ -14,7 +14,7 @@ import com.dto.mangoplate.Shop;
 public class shopController {
 	Scanner sc = new Scanner(System.in);
 
-	
+
 	Shop shop;
 	int shop_no;
 	String shop_name;
@@ -24,9 +24,6 @@ public class shopController {
 	String ceo_id;
 	List<Shop>shop_list;
 	int no;
-	static String url = "jdbc:oracle:thin:@localhost:1521:xe";
-	static String id = "kosta";
-	static String pw = "kosta";
 	menuController menu;
 	private static int count;
 
@@ -58,7 +55,7 @@ public class shopController {
 		PreparedStatement psmt = null;
 		try {
 			Class.forName("oracle.jdbc.driver.OracleDriver");
-			con = DriverManager.getConnection(url, id, pw);
+			con = MyConnection.getConnection();
 
 		} catch (ClassNotFoundException e) {
 			// TODO Auto-generated catch block
@@ -91,7 +88,7 @@ public class shopController {
 		PreparedStatement psmt = null;
 		try {
 			Class.forName("oracle.jdbc.driver.OracleDriver");
-			con = DriverManager.getConnection(url, id, pw);
+			con = MyConnection.getConnection();
 
 		} catch (ClassNotFoundException e) {
 			// TODO Auto-generated catch block
@@ -132,10 +129,10 @@ public class shopController {
 		ResultSet rs = null;
 		PreparedStatement psmt = null;
 		shop_list = new ArrayList<Shop>();
-		
+
 		try {
 			Class.forName("oracle.jdbc.driver.OracleDriver");
-			con = DriverManager.getConnection(url, id, pw);
+			con = MyConnection.getConnection();
 
 		} catch (ClassNotFoundException e) {
 			// TODO Auto-generated catch block
@@ -191,7 +188,7 @@ public class shopController {
 		PreparedStatement psmt = null;
 		try {
 			Class.forName("oracle.jdbc.driver.OracleDriver");
-			con = DriverManager.getConnection(url, id, pw);
+			con = MyConnection.getConnection();
 
 		} catch (ClassNotFoundException e) {
 
@@ -210,19 +207,19 @@ public class shopController {
 		} catch (SQLException e) {
 		}finally {
 			DBConnector.close(rs, psmt, con);
-			}
+		}
 		userController.ceo_menu(user_id);
 	}
 
-	
-	
+
+
 	public void revokeCancel_Request(String user_id,int user_type) {
 		Connection con = null;
 		ResultSet rs = null;
 		PreparedStatement psmt = null;
 		try {
 			Class.forName("oracle.jdbc.driver.OracleDriver");
-			con = DriverManager.getConnection(url, id, pw);
+			con = MyConnection.getConnection();
 
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
@@ -243,14 +240,14 @@ public class shopController {
 		} catch (SQLException e) {
 		}finally {
 			DBConnector.close(rs, psmt, con);
-			}
+		}
 		userController.ceo_menu(user_id);
 	}
 
 
 	public void modify_shopInfo(String ceo_id) {
 		menuController menu= new menuController();
-		
+
 		String search_name = "select * from shop where ceo_id='"+ceo_id+"'";
 		int counter=1;
 		Connection con = null;
@@ -258,7 +255,7 @@ public class shopController {
 		PreparedStatement psmt = null;
 		try {
 			Class.forName("oracle.jdbc.driver.OracleDriver");
-			con = DriverManager.getConnection(url, id, pw);
+			con = MyConnection.getConnection();
 
 		} catch (ClassNotFoundException e) {
 
@@ -266,100 +263,100 @@ public class shopController {
 		} catch (SQLException e) {
 
 		}
-			shop_list = new ArrayList<Shop>();
-			try {
-				psmt = con.prepareStatement(search_name);
-				rs= psmt.executeQuery();
-				while(true){
-					if(rs==null) {
-					}
-					rs.next();
-					shop_no = rs.getInt(1);
-					shop_name = rs.getString(2);
-					shop_state = rs.getInt(3);
-					shop_content = rs.getString(4);
-					shop_type = rs.getString(5);
-					ceo_id = rs.getString(6);
-					shop = new Shop(shop_no,shop_name,shop_state,shop_content,shop_type,ceo_id);
-					shop_list.add(shop);
-					System.out.println(counter+" : "+shop_name);
-					counter++;
-
+		shop_list = new ArrayList<Shop>();
+		try {
+			psmt = con.prepareStatement(search_name);
+			rs= psmt.executeQuery();
+			while(true){
+				if(rs==null) {
 				}
-			} catch (SQLException e) {
+				rs.next();
+				shop_no = rs.getInt(1);
+				shop_name = rs.getString(2);
+				shop_state = rs.getInt(3);
+				shop_content = rs.getString(4);
+				shop_type = rs.getString(5);
+				ceo_id = rs.getString(6);
+				shop = new Shop(shop_no,shop_name,shop_state,shop_content,shop_type,ceo_id);
+				shop_list.add(shop);
+				System.out.println(counter+" : "+shop_name);
+				counter++;
+
 			}
-				System.out.println("수정할 가게 선택");
-				int shop_ch = Integer.parseInt(sc.nextLine());
-				System.out.println("1 : 음식점 정보 수정, 2 : 메뉴 수정");
-				String modi_ch = sc.nextLine();
-				
-				if(modi_ch.equals("1")) {
-				System.out.println("수정 내용 입력");
-				System.out.println("가게 이름 : ");
-				String shopname = sc.nextLine();
+		} catch (SQLException e) {
+		}
+		System.out.println("수정할 가게 선택");
+		int shop_ch = Integer.parseInt(sc.nextLine());
+		System.out.println("1 : 음식점 정보 수정, 2 : 메뉴 수정");
+		String modi_ch = sc.nextLine();
 
-				System.out.println("가게 소개 : ");
-				String shopcontent = sc.nextLine();
+		if(modi_ch.equals("1")) {
+			System.out.println("수정 내용 입력");
+			System.out.println("가게 이름 : ");
+			String shopname = sc.nextLine();
 
-				System.out.println("가게 식종 : ");
-				String shoptype =sc.nextLine();
+			System.out.println("가게 소개 : ");
+			String shopcontent = sc.nextLine();
 
-				Shop shop = new Shop(shop_list.get(shop_ch-1).getShop_name(),shop_list.get(shop_ch-1).getShop_content(),shop_list.get(shop_ch-1).getShop_type());
+			System.out.println("가게 식종 : ");
+			String shoptype =sc.nextLine();
+
+			Shop shop = new Shop(shop_list.get(shop_ch-1).getShop_name(),shop_list.get(shop_ch-1).getShop_content(),shop_list.get(shop_ch-1).getShop_type());
 
 
-				String modishop_sql = "update SHOP set shop_name=?, shop_content=?, shop_type=? "
-						+ "where ceo_id='" + ceo_id +"'and shop_name='"+shop.getShop_name()+"'and shop_content='"+shop.getShop_content()+"'and shop_type='"+shop.getShop_type()+"'";
+			String modishop_sql = "update SHOP set shop_name=?, shop_content=?, shop_type=? "
+					+ "where ceo_id='" + ceo_id +"'and shop_name='"+shop.getShop_name()+"'and shop_content='"+shop.getShop_content()+"'and shop_type='"+shop.getShop_type()+"'";
+			try {
+				psmt = con.prepareStatement(modishop_sql);
+				psmt.setString(1, shopname);
+				psmt.setString(2, shopcontent);
+				psmt.setString(3, shoptype);
+				psmt.executeUpdate();
+
+				System.out.println("변경 완료!");
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}finally{
+				DBConnector.close(rs, psmt, con);
+			}
+		}else if(modi_ch.equals("2")) {
+
+
+			shop =new Shop(shop_list.get(shop_ch-1).getShop_no(),shop_list.get(shop_ch-1).getShop_name(),shop_list.get(shop_ch-1).getShop_state(),shop_list.get(shop_ch-1).getShop_content(),shop_list.get(shop_ch-1).getShop_type(),shop_list.get(shop_ch-1).getCeo_id());
+			int no = shop_list.get(shop_ch-1).getShop_no();
+			menu.MenuSearch(ceo_id,no);
+
+			System.out.println("1 : 메뉴 추가, 2 : 메뉴 수정, 3 : 메뉴 삭제");
+			String menu_ch = sc.nextLine();
+			//메뉴추가
+			if(menu_ch.equals("1")) {
+				String getShopno = "select shop_no from shop where ceo_id='" + ceo_id +"'and shop_name='"+shop.getShop_name()+"'and shop_content='"+shop.getShop_content()+"'and shop_type='"+shop.getShop_type()+"'";
+
 				try {
-					psmt = con.prepareStatement(modishop_sql);
-					psmt.setString(1, shopname);
-					psmt.setString(2, shopcontent);
-					psmt.setString(3, shoptype);
-					psmt.executeUpdate();
-					
-					System.out.println("변경 완료!");
+					psmt.close();
+					psmt = con.prepareStatement(getShopno);
+					rs = psmt.executeQuery();
+					rs.next();
+					int shopno=rs.getInt(1);
+
+					menu.menuInsert(ceo_id, shopno);
 				} catch (SQLException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
-				}finally{
+				}finally {
 					DBConnector.close(rs, psmt, con);
 				}
-				}else if(modi_ch.equals("2")) {
-					
-					
-					shop =new Shop(shop_list.get(shop_ch-1).getShop_no(),shop_list.get(shop_ch-1).getShop_name(),shop_list.get(shop_ch-1).getShop_state(),shop_list.get(shop_ch-1).getShop_content(),shop_list.get(shop_ch-1).getShop_type(),shop_list.get(shop_ch-1).getCeo_id());
-					int no = shop_list.get(shop_ch-1).getShop_no();
-					menu.MenuSearch(ceo_id,no);
-					
-					System.out.println("1 : 메뉴 추가, 2 : 메뉴 수정, 3 : 메뉴 삭제");
-					String menu_ch = sc.nextLine();
-					//메뉴추가
-					if(menu_ch.equals("1")) {
-						String getShopno = "select shop_no from shop where ceo_id='" + ceo_id +"'and shop_name='"+shop.getShop_name()+"'and shop_content='"+shop.getShop_content()+"'and shop_type='"+shop.getShop_type()+"'";
-						
-							try {
-								psmt.close();
-								psmt = con.prepareStatement(getShopno);
-								rs = psmt.executeQuery();
-								rs.next();
-								int shopno=rs.getInt(1);
-								
-								menu.menuInsert(ceo_id, shopno);
-							} catch (SQLException e) {
-								// TODO Auto-generated catch block
-								e.printStackTrace();
-							}finally {
-								DBConnector.close(rs, psmt, con);
-							}
-						
-					}else if(menu_ch.equals("2")){
-						//메뉴 수정 메소드
-						menu.menuModify(ceo_id);
-						
-					}else if(menu_ch.equals("3")) {
-						//메뉴 삭제
-						menu.deleteMenu(ceo_id,shop.getShop_no());
-					}
-				}
+
+			}else if(menu_ch.equals("2")){
+				//메뉴 수정 메소드
+				menu.menuModify(ceo_id);
+
+			}else if(menu_ch.equals("3")) {
+				//메뉴 삭제
+				menu.deleteMenu(ceo_id,shop.getShop_no());
+			}
+		}
 		userController.ceo_menu(ceo_id);
 	}
 

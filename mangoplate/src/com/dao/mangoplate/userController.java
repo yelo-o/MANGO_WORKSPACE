@@ -56,9 +56,7 @@ public class userController {
 		user.setUser_type(0);
 		userController controller = new userController();
 		controller.insert(user);
-
 	}
-
 
 	//점주 회원가입
 	public static void ceo_register() {
@@ -241,6 +239,7 @@ public class userController {
 	public static void cus_menu(String user_ID) {
 		ReviewController reviewCon = new ReviewController();
 		shopController shopCon = new shopController();
+		CusRepository CusRep = new CusRepository();
 		System.out.println("망고플레이트에 오신걸 환영합니다!");
 		System.out.println("원하시는 기능을 선택해주세요!");
 		System.out.println("1 : 전체 음식점 조회, 2 : 음식점 검색, 3 : 내 리뷰 보기, 4 : 회원정보 수정");
@@ -248,11 +247,14 @@ public class userController {
 
 		if (cus_ch.equals("1")) {
 			//1. 전체 음식점 조회 메소드 호출
-			
+			CusRep.cusAllShopList(user_ID);
+			//선택할 수 있도록
+			//메뉴 조회
+			//리뷰 조회
 
 		} else if (cus_ch.equals("2")) {
 			//2. 음식점 검색 메소드 호출
-			shopCon.search_shop(user_ID);
+			// -> 작성 필요
 
 		} else if (cus_ch.equals("3")) {
 			//3. 내 리뷰 보기 메소드 호출

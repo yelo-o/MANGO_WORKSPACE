@@ -18,9 +18,9 @@ import com.dto.mangoplate.Menu;
 import com.dto.mangoplate.Shop;
 public class menuController {
 	Scanner sc = new Scanner(System.in);
-	static String url = "jdbc:oracle:thin:@localhost:1521:xe";
-	static String id = "kosta";
-	static String pw = "kosta";
+//	static String url = "jdbc:oracle:thin:@localhost:1521/xe";
+//	static String id = "loacalmg";
+//	static String pw = "localmg";
 	List<Menu>menu_list;
 	
 	private static int count;
@@ -41,7 +41,7 @@ public class menuController {
 		PreparedStatement psmt = null;
 		try {
 			Class.forName("oracle.jdbc.driver.OracleDriver");
-			con = DriverManager.getConnection(url, id, pw);
+			con = MyConnection.getConnection();
 		} catch (ClassNotFoundException e) {
 		} catch (SQLException e) {
 		}
@@ -55,7 +55,7 @@ public class menuController {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}finally {
-			DBConnector.close(rs, psmt, con);
+			MyConnection.close(rs, psmt, con);
 		}
 		return count;
 
@@ -67,7 +67,7 @@ public class menuController {
 		PreparedStatement psmt = null;
 		try {
 			Class.forName("oracle.jdbc.driver.OracleDriver");
-			con = DriverManager.getConnection(url, id, pw);
+			con = MyConnection.getConnection();
 		} catch (ClassNotFoundException e) {
 		} catch (SQLException e) {
 		}
@@ -103,7 +103,7 @@ public class menuController {
 			} catch (SQLException e) {
 			}finally {
 				System.out.println("--------------------------------------------------");
-				DBConnector.close(rs,psmt,con);
+				MyConnection.close(rs, psmt, con);
 			}
 	}
 	//가게 등록 요청
@@ -130,7 +130,7 @@ public class menuController {
 		menu = new Menu(menu.getShop_no(), menu.getMenu_no(),menu_name, menu_content, menu.getMenu_state());
 		try {
 			Class.forName("oracle.jdbc.driver.OracleDriver");
-			con = DriverManager.getConnection(url, id, pw);
+			con = MyConnection.getConnection();
 		} catch (ClassNotFoundException e) {
 		} catch (SQLException e) {
 		}
@@ -150,7 +150,7 @@ public class menuController {
 			e.printStackTrace();
 		}
 		finally{	
-			DBConnector.close(rs, psmt, con);
+			MyConnection.close(rs, psmt, con);
 		}
 	}
 	
@@ -180,7 +180,7 @@ public class menuController {
 		}
 		try {
 			Class.forName("oracle.jdbc.driver.OracleDriver");
-			con = DriverManager.getConnection(url, id, pw);
+			con = MyConnection.getConnection();
 		} catch (ClassNotFoundException e) {
 		} catch (SQLException e) {
 		}
@@ -199,7 +199,7 @@ public class menuController {
 		}
 		finally{	
 			menu_list.clear();
-			DBConnector.close(rs, psmt, con);
+			MyConnection.close(rs, psmt, con);
 		}
 	}
 	public void deleteMenu(String ceo_id, int shop_no) {
@@ -216,7 +216,7 @@ public class menuController {
 
 		try {
 			Class.forName("oracle.jdbc.driver.OracleDriver");
-			con = DriverManager.getConnection(url, id, pw);
+			con = MyConnection.getConnection();
 		} catch (ClassNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -235,7 +235,7 @@ public class menuController {
 		}finally {
 			MenuSearch(ceo_id,shop_no);
 			menu_list.clear();
-			DBConnector.close(rs, psmt, con);
+			MyConnection.close(rs, psmt, con);
 		}
 		
 	}
