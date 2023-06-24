@@ -69,13 +69,12 @@ public class ReviewController {
 		
 		//(2) 입력받은 변수값을 토대로 SQL문 구성하여 실행해서 DB데이터 업데이트
 		try {
-			count = num_max();
+			count = num_max(); //현재 DB에서 행이 몇개 인지 받아오기
 			count++;
-
+			
 			String sql = "INSERT INTO shop_review(shop_no, review_no, writer, review_content,\r\n"
 					+ "review_date, review_rating)\r\n"
 					+ "VALUES(?, ?, ?, ?, SYSDATE, ?)";
-
 			pstmt = conn.prepareStatement(sql);
 
 			System.out.println("내용을 입력하세요");
@@ -143,6 +142,7 @@ public class ReviewController {
 			pstmt = conn.prepareStatement(sql);
 			rs = pstmt.executeQuery();
 			System.out.printf("%-10s%-15s%-12s%-20s%-40s\n", "리뷰번호", "작성자", "별점", "작성일자", "리뷰 내용");
+			
 			while(rs.next()) {
 				int reviewNo = rs.getInt("review_no");
 				String reviewWriter = rs.getString("writer");
@@ -215,12 +215,13 @@ public class ReviewController {
 
 	// 종료
 	public void exit() {
-		if(conn != null) {
-			try {
-				conn.close();
-			} catch (SQLException e) {
-			}
-		}
+		MyConnection.close(rs, pstmt, conn);
+//		if(conn != null) {
+//			try {
+//				conn.close();
+//			} catch (SQLException e) {
+//			}
+//		}
 		System.out.println("** 종료 **");
 		System.exit(0);
 	}

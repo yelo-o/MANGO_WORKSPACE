@@ -18,9 +18,6 @@ import com.dto.mangoplate.Menu;
 import com.dto.mangoplate.Shop;
 public class menuController {
 	Scanner sc = new Scanner(System.in);
-//	static String url = "jdbc:oracle:thin:@localhost:1521/xe";
-//	static String id = "loacalmg";
-//	static String pw = "localmg";
 	List<Menu>menu_list;
 	
 	private static int count;
