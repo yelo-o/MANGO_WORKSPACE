@@ -21,7 +21,7 @@ public class CusRepository
 	String ceo_id;
 	List<Shop>shop_list;
 	int no;
-	menuController menu;
+	MenuController menu;
 	shopController shopcontroll;
 	private static int count;
 	Scanner sc = new Scanner(System.in); 
@@ -29,7 +29,12 @@ public class CusRepository
 	ResultSet rs = null;
 	PreparedStatement psmt = null;
 	
-	public void cusAllShopList(String user_id) {
+	public void cusAllShopList() {
+		/**
+		 * @author mingyu
+		 */
+		System.out.println("verifiedID : " + userController.verifiedID);
+		
 		String search_shop = "select * from shop where shop_state = '1'";
 		int counter = 1;
 		shop_list = new ArrayList<Shop>();
@@ -104,8 +109,8 @@ public class CusRepository
 			psmt.executeQuery();
 			rs = psmt.executeQuery();
 			System.out.println("--------------------------------------------------");
-			while(true) {
-				rs.next();
+			while(rs.next()) {
+//				rs.next();
 				shop_no=rs.getInt(1);
 				shop_name = rs.getString(2);
 				shop_content = rs.getString(4);
@@ -120,6 +125,7 @@ public class CusRepository
 		}catch(SQLException e) {
 		}finally {
 			MyConnection.close(rs, psmt, con);
+			userController.cus_menu();
 		}
 	}
 	public void cusRateHighShopList() {

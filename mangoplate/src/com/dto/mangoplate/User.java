@@ -12,6 +12,8 @@ public class User {
 	private String phone;
 	private String birth;
 	private int user_type;
+	public static String verifiedCeoID;
+	public static String verifiedCustomerID;
 	
 	public User() {
 		

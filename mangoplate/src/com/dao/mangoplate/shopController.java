@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Scanner;
 
 import com.dto.mangoplate.Shop;
+import com.dto.mangoplate.User;
 
 public class shopController {
 	Scanner sc = new Scanner(System.in);
@@ -23,8 +24,8 @@ public class shopController {
 	String ceo_id;
 	List<Shop>shop_list;
 	int no;
-	menuController menu;
-	private static int count;
+	int count;
+	
 	Connection con = null;
 	ResultSet rs = null;
 	PreparedStatement psmt = null;
@@ -35,7 +36,7 @@ public class shopController {
 	public shopController(Shop shop){
 	}
 
-	public void ceo_page(String ceo_id) {
+	public void ceo_page() {
 		System.out.println("가게 이름을 적어주세요.");
 		shop_name = sc.nextLine();
 		System.out.println("가게를 소개해주세요.");
@@ -43,10 +44,10 @@ public class shopController {
 		System.out.println("식종을 적어주세요");
 		shop_type = sc.nextLine();
 
-		Shop shop = new Shop(shop_name, shop_content, shop_type, ceo_id);
-		shopController controller = new shopController();
-		controller.insert(shop);
-		userController.ceo_menu(ceo_id);
+		Shop shop = new Shop(shop_name, shop_content, shop_type, User.verifiedCeoID);
+		shopController shopCon = new shopController();
+		shopCon.insert(shop);
+		userController.ceo_menu();
 	}
 
 	public int num_max() {
@@ -66,25 +67,28 @@ public class shopController {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}finally {
-			DBConnector.close(rs, psmt, con);
+			MyConnection.close(rs, psmt, con);
 		}
+		System.out.println("finally 밖 count : " + count);
 		return count;
-
 	} 
 	//가게 등록 요청
 	public void insert(Shop shop) {
-
-		String sql = "insert into SHOP(Shop_no, shop_name, shop_state, shop_content, shop_type, ceo_id) values (?,?,?,?,?,?)";
+		count = num_max();
 		try {
 			con = MyConnection.getConnection();
 		} catch (ClassNotFoundException | SQLException e) {
 			e.printStackTrace();
 		}
-		count = num_max();
+		try {
+		String sql = "insert into SHOP(Shop_no, shop_name, shop_state, shop_content, "
+					+ "shop_type, ceo_id) values (?,?,?,?,?,?)";
+		System.out.println("count : " + count);
 		shop.setShop_no(count);
 		shop.setShop_state(0);
 
-		try {
+		System.out.println("shop.getCeo_id() : " + shop.getCeo_id());
+		
 			psmt = con.prepareStatement(sql);
 			psmt.setInt(1, shop.getShop_no());
 			psmt.setString(2, shop.getShop_name());
@@ -94,20 +98,19 @@ public class shopController {
 			psmt.setString(6, shop.getCeo_id());
 			psmt.executeUpdate();
 			System.out.println("신청완료!");
-		}catch(SQLIntegrityConstraintViolationException e) {
+		} catch(SQLIntegrityConstraintViolationException e) {
 
-		}catch (SQLException e) {
+		} catch (SQLException e) {
 			System.out.println("구문입력 오류");
 			e.printStackTrace();
-		}
-		finally{	
-			DBConnector.close(rs, psmt, con);
+		} finally{	
+			MyConnection.close(rs, psmt, con);
 		}
 
 	}
-	//가게 정보 수정
-	public void search_shop(String ceo_id) {
-		String search_id = "select * from shop where ceo_id = '"+ceo_id+"'";
+	//가게 검색
+	public void search_shop() {
+		String search_id = "select * from shop where ceo_id = '"+User.verifiedCeoID+"'";
 		shop_list = new ArrayList<Shop>();
 
 		try {
@@ -127,7 +130,7 @@ public class shopController {
 				shop_state = rs.getInt(3);
 				shop_content = rs.getString(4);
 				shop_type = rs.getString(5);
-				Shop shop = new Shop(shop_no, shop_name,shop_state,shop_content,shop_type,ceo_id); 
+				Shop shop = new Shop(shop_no, shop_name,shop_state,shop_content,shop_type,User.verifiedCeoID); 
 				shop_list.add(shop);
 
 				if(shop_state==0) {
@@ -149,12 +152,12 @@ public class shopController {
 			}
 		}catch(SQLException e) {
 		}finally {
-			DBConnector.close(rs, psmt, con);
+			MyConnection.close(rs, psmt, con);
 		}
 		//userController.ceo_menu(ceo_id);
 	}
 
-	public void revokeShop_Request(String user_id,int user_type) {
+	public void revokeShop_Request(int user_type) {
 		try {
 			con = MyConnection.getConnection();
 		} catch (ClassNotFoundException | SQLException e) {
@@ -171,14 +174,14 @@ public class shopController {
 			System.out.println("철회신청이 완료되었습니다.");
 		} catch (SQLException e) {
 		}finally {
-			DBConnector.close(rs, psmt, con);
+			MyConnection.close(rs, psmt, con);
 		}
-		userController.ceo_menu(user_id);
+		userController.ceo_menu();
 	}
 
 
 
-	public void revokeCancel_Request(String user_id,int user_type) {
+	public void revokeCancel_Request(int user_type) {
 		try {
 			con = MyConnection.getConnection();
 		} catch (ClassNotFoundException | SQLException e) {
@@ -197,15 +200,15 @@ public class shopController {
 			System.out.println("철회 취소 신청이 완료되었습니다.");
 		} catch (SQLException e) {
 		}finally {
-			DBConnector.close(rs, psmt, con);
+			MyConnection.close(rs, psmt, con);
 		}
-		userController.ceo_menu(user_id);
+		userController.ceo_menu();
 	}
 
 
-	public void modify_shopInfo(String ceo_id) {
-		menuController menu= new menuController();
-		String search_name = "select * from shop where ceo_id='"+ceo_id+"'";
+	public void modify_shopInfo() {
+		MenuController menu= new MenuController();
+		String search_name = "select * from shop where ceo_id='"+User.verifiedCeoID+"'";
 		int counter=1;
 		try {
 			con = MyConnection.getConnection();
@@ -267,19 +270,17 @@ public class shopController {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}finally{
-				DBConnector.close(rs, psmt, con);
+				MyConnection.close(rs, psmt, con);
 			}
-		} else if(modi_ch.equals("2")) {
-
-
+		} else if(modi_ch.equals("2")) { //2 : 메뉴 수정
 			shop =new Shop(shop_list.get(shop_ch-1).getShop_no(),shop_list.get(shop_ch-1).getShop_name(),shop_list.get(shop_ch-1).getShop_state(),shop_list.get(shop_ch-1).getShop_content(),shop_list.get(shop_ch-1).getShop_type(),shop_list.get(shop_ch-1).getCeo_id());
-			int no = shop_list.get(shop_ch-1).getShop_no();
-			menu.MenuSearch(ceo_id,no);
+			String name = shop_list.get(shop_ch-1).getShop_name();
+			MenuController.getMenusByShop(name);
 
 			System.out.println("1 : 메뉴 추가, 2 : 메뉴 수정, 3 : 메뉴 삭제");
 			String menu_ch = sc.nextLine();
-			//메뉴추가
-			if(menu_ch.equals("1")) {
+			
+			if(menu_ch.equals("1")) { //메뉴추가
 				String getShopno = "select shop_no from shop where ceo_id='" + ceo_id +"'and shop_name='"+shop.getShop_name()+"'and shop_content='"+shop.getShop_content()+"'and shop_type='"+shop.getShop_type()+"'";
 
 				try {
@@ -289,24 +290,24 @@ public class shopController {
 					rs.next();
 					int shopno=rs.getInt(1);
 
-					menu.menuInsert(ceo_id, shopno);
+					MenuController.addMenu(shopno);
 				} catch (SQLException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				} finally {
-					DBConnector.close(rs, psmt, con);
+					MyConnection.close(rs, psmt, con);
 				}
 
 			} else if(menu_ch.equals("2")){
 				//메뉴 수정 메소드
-				menu.menuModify(ceo_id);
+				MenuController.updateMenu();
 
 			} else if(menu_ch.equals("3")) {
 				//메뉴 삭제
-				menu.deleteMenu(ceo_id,shop.getShop_no());
+				MenuController.deleteMenu();
 			}
 		}
-		userController.ceo_menu(ceo_id);
+		userController.ceo_menu();
 	}
 
 }

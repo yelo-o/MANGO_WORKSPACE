@@ -10,12 +10,12 @@ import java.util.Scanner;
 import com.dto.mangoplate.Shop;
 
 public class ReviewController {
-	Scanner sc = new Scanner(System.in);
+	static Scanner sc = new Scanner(System.in);
 	int count = 0;
 
-	Connection conn = null;
-	PreparedStatement pstmt = null;
-	ResultSet rs = null;
+	static Connection conn = null;
+	static PreparedStatement pstmt = null;
+	static ResultSet rs = null;
 
 	Shop shop = new Shop();
 	int shop_no = 1;
@@ -33,7 +33,7 @@ public class ReviewController {
 			readReaview(ceo_id);
 			reviewPage();
 		case 3:
-			readMyReview(ceo_id);
+			readMyReview();
 			reviewPage();
 		case 9:
 			exit();
@@ -129,7 +129,7 @@ public class ReviewController {
 	}
 
 	//3. 내 리뷰 보기
-	public void readMyReview(String ceo_id) {
+	public static void readMyReview() {
 		//(1) DB연결 준비
 		try {
 			conn = MyConnection.getConnection();
@@ -138,24 +138,27 @@ public class ReviewController {
 		}
 		//(2) SQL문 실행 후 결과 불러오기
 		try {
-			String sql = "SELECT * FROM shop_review WHERE writer = '"+ceo_id+"'";
+			String sql = "SELECT * FROM shop_review WHERE writer = '"+userController.verifiedID+"'";
 
 			pstmt = conn.prepareStatement(sql);
 			rs = pstmt.executeQuery();
-			System.out.printf("%-10s%-15s%-12s%-20s%-40s\n", "리뷰번호", "작성자", "별점", "작성일자", "리뷰 내용");
+			System.out.printf("%-10s%-15s%-12s%-20s%-40s\n", 
+					          "리뷰번호", "작성자", "별점", "작성일자", "리뷰 내용");
 			while(rs.next()) {
 				int reviewNo = rs.getInt("review_no");
 				String reviewWriter = rs.getString("writer");
 				String reviewContent = rs.getString("review_content");
 				Date reviewDate = rs.getDate("review_date");
 				int reviewRating = rs.getInt("review_rating");
-				System.out.printf("%-10s%-15s%-12s%-20s%-40s\n", reviewNo, reviewWriter, reviewRating, reviewDate, reviewContent);
+				System.out.printf("%-10s%-15s%-12s%-20s%-40s\n", reviewNo, reviewWriter,
+						     	  reviewRating, reviewDate, reviewContent);
 			}
-
+			//보조메뉴 꾸미기
 			System.out.println("******************************************************************************");
 			System.out.println("*****************************************보조메뉴: 1.리뷰 수정 | 2.리뷰 삭제 | 9.종료**");
 			System.out.println("******************************************************************************");
 			System.out.println();
+			
 			int selection = Integer.parseInt(sc.nextLine());
 			if(selection==1) { //리뷰 수정
 				modifyReview();
@@ -164,15 +167,14 @@ public class ReviewController {
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
-		} 
-		finally {
+		} finally {
 			MyConnection.close(rs, pstmt, conn);
 		}
 
 	}
 
 	//3-1. 리뷰 수정
-	public void modifyReview() {
+	public static void modifyReview() {
 		try {
 			System.out.println("수정을 원하는 리뷰번호를 입력하세요");
 			int reviewNo = Integer.parseInt(sc.nextLine());
@@ -195,7 +197,7 @@ public class ReviewController {
 	}
 
 	//3-2. 리뷰 삭제
-	public void deleteReview() {
+	public static void deleteReview() {
 		try {
 			System.out.println("삭제를 원하는 리뷰번호를 입력하세요");
 			int reviewNo = Integer.parseInt(sc.nextLine());

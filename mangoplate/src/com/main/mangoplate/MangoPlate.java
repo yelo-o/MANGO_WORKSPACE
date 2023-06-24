@@ -33,14 +33,14 @@ public class MangoPlate {
 
 				if(register_ch.equals("1")) {
 					//점주 고객
-					//               user_register.ceo_register();
+	               user.ceo_register();
 				}
 				else if(register_ch.equals("2")) {
 					userController.user_register();
 				}
 				else if(register_ch.equals("iamadmin")) {
 					//관리자
-					//               user_register.admin_register();
+	               user.admin_register();
 				}
 				mango.main(args);
 			}
