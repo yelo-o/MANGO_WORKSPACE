@@ -5,3 +5,5 @@
 <p align="center">
     <img src="https://github.com/yelo-o/MANGO_WORKSPACE/assets/64743180/7926f5ac-69dc-49d7-8e5d-7569d9a88bc0">
 </p>
+
+저는 바보 예림입니다.
