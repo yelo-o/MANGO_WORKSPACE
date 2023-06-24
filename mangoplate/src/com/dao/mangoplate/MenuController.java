@@ -13,7 +13,6 @@ import java.util.Scanner;
 public class MenuController {
 
 
-	private static BufferedReader reader; // 전역 변수로 BufferedReader 선언
 	static Scanner sc = new Scanner(System.in);
 
 	static Connection conn = null;
@@ -21,7 +20,7 @@ public class MenuController {
 	static PreparedStatement psmt = null;
 
 	//메뉴추가
-	public static void addMenu(String ceo_id, int shop_no) {
+	public static void addMenu(int shop_no) {
 
 		System.out.println("메뉴 등록을 시작합니다.");
 		int shopNo = shop_no;
@@ -30,7 +29,6 @@ public class MenuController {
 		try {
 			conn = MyConnection.getConnection();
 		} catch (ClassNotFoundException | SQLException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} // 받아오는거
 		
@@ -45,11 +43,11 @@ public class MenuController {
 				menuNo = menunum;
 			}
 			
-//			MyConnection.close(rs, psmt, conn);
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
-		} // 이렇게해야널포인트예외ㅇ안뜬다
+		} finally {
+			MyConnection.close(rs, psmt, conn);
+		}
 
 		System.out.println("MENU_NAME을 입력하세요: ");
 		String menuName = sc.nextLine();
@@ -61,8 +59,6 @@ public class MenuController {
 
 		String sql = "INSERT INTO MENU (SHOP_NO, MENU_NO, MENU_NAME, MENU_CONTENT, MENU_STATE) "
 				+ "VALUES (?, ?, ?, ?, ?)";
-
-		Connection conn;
 		try {
 			conn = MyConnection.getConnection();
 			PreparedStatement stmt = conn.prepareStatement(sql);
@@ -83,8 +79,9 @@ public class MenuController {
 
 		} catch (ClassNotFoundException | SQLException e) {
 			e.printStackTrace();
+		} finally {
+			MyConnection.close(rs, psmt, conn);
 		}
-
 	}
 
 	//모든 메뉴 조회
@@ -125,6 +122,8 @@ public class MenuController {
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+		} finally {
+			MyConnection.close(rs, psmt, conn);
 		}
 
 	}
@@ -163,6 +162,8 @@ public class MenuController {
 
 		} catch (ClassNotFoundException | SQLException e) {
 			System.out.println("데이터베이스 연결 중 오류가 발생했습니다: " + e.getMessage());
+		} finally {
+			MyConnection.close(rs, psmt, conn);
 		}
 	}
 
@@ -178,7 +179,6 @@ public class MenuController {
 		System.out.println("MENU_NO를 입력하세요: ");
 		String searchMenuNo = sc.nextLine();
 
-		Connection conn;
 		try {
 			conn = MyConnection.getConnection();
 
@@ -223,6 +223,8 @@ public class MenuController {
 		} catch (ClassNotFoundException | SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+		} finally {
+			MyConnection.close(rs, psmt, conn);
 		}
 	}
 
@@ -235,7 +237,6 @@ public class MenuController {
 		System.out.println("MENU_NO를 입력하세요: ");
 		String searchMenuNo = sc.nextLine();
 
-		Connection conn;
 		try {
 			conn = MyConnection.getConnection();
 
@@ -279,6 +280,8 @@ public class MenuController {
 
 		} catch (ClassNotFoundException | SQLException e) {
 			e.printStackTrace();
+		} finally {
+			MyConnection.close(rs, psmt, conn);
 		}
 	}
 
@@ -286,47 +289,4 @@ public class MenuController {
 		System.out.println("프로그램을 종료합니다.");
 		System.exit(0);
 	}
-	/*
-	public static void main(String[] args) throws ClassNotFoundException, SQLException {
-		reader = new BufferedReader(new InputStreamReader(System.in)); // BufferedReader 초기화
-
-		try {
-			while (true) {
-				System.out.println("1. 메뉴 등록"); // 관리자
-				System.out.println("2. 전체메뉴조회"); // 관리자 사용자
-				System.out.println("3. Shop별 메뉴조회"); // 관리자 사용자
-				System.out.println("4. 메뉴 수정"); // 관리자
-				System.out.println("5. 메뉴 삭제");
-				System.out.println("6. 종료");
-				System.out.println("번호를 선택하세요: ");
-				String choice = sc.nextLine();
-
-				if (choice.equals("1")) {
-					addMenu();
-				} else if (choice.equals("2")) {
-					getAllMenus();
-				} else if (choice.equals("3")) {
-					System.out.println("상점 번호를 입력하세요: ");
-					String shopNo = sc.nextLine();
-					getMenusByShop(shopNo);
-				} else if (choice.equals("4")) {
-					updateMenu();
-				} else if (choice.equals("5")) {
-					deleteMenu();
-				} else if (choice.equals("6")) {
-					exitProgram();
-				} else {
-					System.out.println("유효한 번호를 선택하세요.");
-				}
-			}
-
-		} finally {
-			try {
-				reader.close(); // BufferedReader 닫기
-			} catch (IOException e) {
-				System.out.println("입력 스트림을 닫는 중 오류가 발생했습니다: " + e.getMessage());
-			}
-		}
-	}
-	*/
 }
