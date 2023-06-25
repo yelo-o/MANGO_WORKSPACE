@@ -125,8 +125,50 @@ public class MenuController {
 		} finally {
 			MyConnection.close(rs, psmt, conn);
 		}
-
 	}
+	//모든 메뉴 조회
+		public static void getAllMenus(int shop_no) {
+			
+			//DB연결 준비
+			try {
+				conn = MyConnection.getConnection();
+			} catch (ClassNotFoundException | SQLException e) {
+				e.printStackTrace();
+			}
+
+			try {
+				// where 샵 스테이트 1인 애만 검색)
+				String sql = "SELECT *\r\n"
+						+ "FROM SHOP JOIN MENU ON(shop.shop_no=menu.shop_no)\r\n"
+						+ "WHERE shop_state=1 AND menu.shop_no ="+ shop_no +"";
+				
+				psmt = conn.prepareStatement(sql);
+				ResultSet rs = psmt.executeQuery();
+				System.out.println("전체 메뉴 목록:");
+				System.out.println("------------------------------------------------------");
+				System.out.println("SHOP_NO\tMENU_NO\tMENU_NAME\tMENU_CONTENT\tMENU_STATE");
+				System.out.println("------------------------------------------------------");
+				
+				while (rs.next()) {
+					int shopNo = rs.getInt("SHOP_NO");
+					int menuNo = rs.getInt("MENU_NO");
+					String menuName = rs.getString("MENU_NAME");
+					String menuContent = rs.getString("MENU_CONTENT");
+					boolean menuState = rs.getBoolean("MENU_STATE");
+					
+					System.out.printf("%s\t%s\t%s\t%s\t%s%n", shopNo, menuNo, menuName, menuContent, menuState);
+//					System.out.println(shopNo +  menuNo + menuName + menuContent + menuState);
+//					System.out.println(menuNo + menuName + menuContent + menuState);
+					
+					System.out.println("------------------------------------------------------");
+				}
+			} catch (SQLException e) {
+				e.printStackTrace();
+			} finally {
+				MyConnection.close(rs, psmt, conn);
+			}
+		}
+	
 	
 	//샵 검색 - 메뉴 조회  
 	public static void getMenusByShop(String shopName) {
