@@ -200,10 +200,10 @@ public class userController {
 				System.out.println("안녕하세요 " +user_name+"님 반갑습니다.");
 
 				if (user_type == 1) {
-					User.verifiedCeoID = user_ID;
+					User.verifiedCeoID = user_ID; //로그인된 점주 아이디 저장
 					ceo_menu();
 				} else if (user_type == 2) {
-					User.verifiedCustomerID = user_ID;
+					User.verifiedCustomerID = user_ID; //로그인된 사용자 아이디 저장
 					cus_menu();
 				}
 			}
@@ -257,9 +257,6 @@ public class userController {
 		if (cus_ch.equals("1")) {
 			//1. 전체 음식점 조회 메소드 호출
 			CusRep.cusAllShopList();
-			//선택할 수 있도록
-			//메뉴 조회
-			//리뷰 조회
 
 		} else if (cus_ch.equals("2")) {
 			//2. 음식점 검색 메소드 호출

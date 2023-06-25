@@ -30,10 +30,6 @@ public class CusRepository
 	PreparedStatement psmt = null;
 	
 	public void cusAllShopList() {
-		/**
-		 * @author mingyu
-		 */
-		System.out.println("verifiedID : " + userController.verifiedID);
 		
 		String search_shop = "select * from shop where shop_state = '1'";
 		int counter = 1;
@@ -50,18 +46,33 @@ public class CusRepository
 			psmt = con.prepareStatement(search_shop);
 			rs = psmt.executeQuery();
 			System.out.println("------------------------------------------------------------------");
-			while(true) {
-				rs.next();
+			while(rs.next()) {
 				shop_no=rs.getInt(1);
 				shop_name = rs.getString(2);
 				shop_content = rs.getString(4);
 				shop_type = rs.getString(5);
 				Shop shop = new Shop(shop_no, shop_name,shop_content,shop_type,ceo_id); 
 				shop_list.add(shop);
-				System.out.println(counter+") 가게 이름 : " +shop_name+"\n가게 소개 : "+shop_content+"\n식종 : "+shop_type);
+				System.out.println(shop_no+") 가게 이름 : " +shop_name+"\n가게 소개 : "+shop_content+"\n식종 : "+shop_type);
 				counter++;
 				System.out.println("------------------------------------------------------------------");
 			}
+			
+			System.out.println("조회할 상점 번호를 선택해주세요");
+			int shopNo = Integer.parseInt(sc.nextLine());
+			
+			System.out.println("1. 메뉴 조회 | 2. 리뷰 조회");
+			int selection = Integer.parseInt(sc.nextLine());
+			switch(selection) {
+			case 1:
+				MenuController.getAllMenus(shopNo);
+				cusAllShopList();
+			case 2:
+				ReviewController.reviewPage(shopNo);
+				cusAllShopList();
+			}
+			
+			
 		}catch(SQLException e) {
 		}finally {
 			MyConnection.close(rs, psmt, con);

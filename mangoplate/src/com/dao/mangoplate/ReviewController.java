@@ -8,40 +8,40 @@ import java.sql.SQLException;
 import java.util.Scanner;
 
 import com.dto.mangoplate.Shop;
+import com.dto.mangoplate.User;
 
 public class ReviewController {
 	static Scanner sc = new Scanner(System.in);
-	int count = 0;
+	static int count = 0;
 
 	static Connection conn = null;
 	static PreparedStatement pstmt = null;
 	static ResultSet rs = null;
 
 	Shop shop = new Shop();
-	int shop_no = 1;
 	String ceo_id = "mango"; //로그인할 때 받아오는 user_id
 
 	//메인 메뉴
-	public void reviewPage() {
+	public static void reviewPage(int shop_no) {
 		System.out.println("메뉴: 1.리뷰 작성 | 2.리뷰 읽기 | 3.내 리뷰 보기 | 9.종료");
 		int selection =Integer.parseInt(sc.nextLine());
 		switch(selection) {
 		case 1:
-			insertReview(shop_no, ceo_id);
-			reviewPage(); //리뷰 페이지로 다시 돌아오기
+			insertReview(shop_no);
+			reviewPage(shop_no); //리뷰 페이지로 다시 돌아오기
 		case 2:
-			readReaview(ceo_id);
-			reviewPage();
+			readReaview(shop_no);
+			reviewPage(shop_no);
 		case 3:
 			readMyReview();
-			reviewPage();
+			reviewPage(shop_no);
 		case 9:
 			exit();
 			break;
 		}
 	}
 
-	public int num_max() {
+	public static int num_max() {
 		String sql = "SELECT MAX(review_no) FROM shop_review";
 		try {
 			conn = MyConnection.getConnection();
@@ -59,7 +59,7 @@ public class ReviewController {
 	} 
 
 	//1. 리뷰 작성
-	public void insertReview(int shop_no, String ceo_id) {
+	public static void insertReview(int shop_no) {
 		//(1) DB연결 준비
 		try {
 			conn = MyConnection.getConnection();
@@ -85,7 +85,7 @@ public class ReviewController {
 
 			pstmt.setInt(1, shop_no);
 			pstmt.setInt(2, count);
-			pstmt.setString(3, ceo_id);
+			pstmt.setString(3, User.verifiedCustomerID);
 			pstmt.setString(4, reviewContent);
 			pstmt.setInt(5, reviewRating);
 			pstmt.executeUpdate();
@@ -98,7 +98,7 @@ public class ReviewController {
 	}
 
 	//2. 모든 리뷰 읽기
-	public void readReaview(String ceo_id) {
+	public static void readReaview(int shop_no) {
 		//(1) DB연결 준비
 		try {
 			conn = MyConnection.getConnection();
@@ -107,7 +107,7 @@ public class ReviewController {
 		}
 		//(2) SQL문 실행 후 결과 불러오기
 		try {
-			String sql = "SELECT * FROM shop_review ORDER BY review_no DESC";
+			String sql = "SELECT * FROM shop_review WHERE shop_no ="+ shop_no + "ORDER BY review_no DESC";
 			pstmt = conn.prepareStatement(sql);
 			rs = pstmt.executeQuery();
 			System.out.printf("%-10s%-15s%-12s%-20s%-40s\n", "리뷰번호", "작성자", "별점", "작성일자", "리뷰 내용");
@@ -138,12 +138,13 @@ public class ReviewController {
 		}
 		//(2) SQL문 실행 후 결과 불러오기
 		try {
-			String sql = "SELECT * FROM shop_review WHERE writer = '"+userController.verifiedID+"'";
+			String sql = "SELECT * FROM shop_review WHERE writer = '"+User.verifiedCustomerID+"'";
 
 			pstmt = conn.prepareStatement(sql);
 			rs = pstmt.executeQuery();
 			System.out.printf("%-10s%-15s%-12s%-20s%-40s\n", 
 					          "리뷰번호", "작성자", "별점", "작성일자", "리뷰 내용");
+			
 			while(rs.next()) {
 				int reviewNo = rs.getInt("review_no");
 				String reviewWriter = rs.getString("writer");
@@ -216,7 +217,7 @@ public class ReviewController {
 	}
 
 	// 종료
-	public void exit() {
+	public static void exit() {
 		if(conn != null) {
 			try {
 				conn.close();
