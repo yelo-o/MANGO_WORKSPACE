@@ -88,7 +88,7 @@ import com.repository.mangoplate.UserRepository;
 public class MangoPlate {
 
    @SuppressWarnings("static-access")
-   public static void main(String[] args) {
+   public static void main(String[] args) throws ClassNotFoundException {
       // TODO Auto-generated method stub
       MangoPlate mango = new MangoPlate();
       UserController user = new UserController();
@@ -101,7 +101,7 @@ public class MangoPlate {
          login_ch = sc.nextLine();
          //로그인
          if(login_ch.equals("1")) {
-            user.login();
+            UserRepository.login();
          }//가입
          else if(login_ch.equals("2")) {
          
