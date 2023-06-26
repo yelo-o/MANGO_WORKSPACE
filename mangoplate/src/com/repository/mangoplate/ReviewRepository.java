@@ -169,6 +169,11 @@ public class ReviewRepository {
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
 		try {
+			conn = MyConnection.getConnection();
+		} catch (ClassNotFoundException | SQLException e) {
+			e.printStackTrace();
+		}
+		try {
 			System.out.println("수정을 원하는 리뷰번호를 입력하세요");
 			int reviewNo = Integer.parseInt(sc.nextLine());
 
@@ -194,6 +199,11 @@ public class ReviewRepository {
 		Connection conn = null;
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
+		try {
+			conn = MyConnection.getConnection();
+		} catch (ClassNotFoundException | SQLException e) {
+			e.printStackTrace();
+		}
 		try {
 			System.out.println("삭제를 원하는 리뷰번호를 입력하세요");
 			int reviewNo = Integer.parseInt(sc.nextLine());

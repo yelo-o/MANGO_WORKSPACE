@@ -13,10 +13,6 @@ public class MangoPlate {
 
    @SuppressWarnings("static-access")
    public static void main(String[] args) throws ClassNotFoundException {
-<<<<<<< HEAD
-      // TODO Auto-generated method stub
-=======
->>>>>>> 9589d84030599ff498cec2be2ec984b6ac4b113d
       MangoPlate mango = new MangoPlate();
       Scanner sc = new Scanner(System.in);
       String login_ch;

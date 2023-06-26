@@ -18,14 +18,14 @@ public class MenuController {
 
 	static Scanner sc = new Scanner(System.in);
 	static List<Menu>menu_list = new ArrayList<Menu>();
-	
+
 
 	//메뉴추가
 	public static void addMenu(int shop_no) {
 		Connection conn = null;
 		ResultSet rs = null;
 		PreparedStatement psmt = null;
-		
+
 		System.out.println("메뉴를 등록합니다.");
 		int shopNo = shop_no;
 		String Maxsql = "SELECT MAX(MENU_NO) FROM MENU";
@@ -35,9 +35,9 @@ public class MenuController {
 		} catch (ClassNotFoundException | SQLException e) {
 			e.printStackTrace();
 		} // 받아오는거
-		
+
 		int menuNo = 0;
-		
+
 		try {
 			psmt = conn.prepareStatement(Maxsql);
 			rs = psmt.executeQuery(); // 보내는거 + 초기화
@@ -46,7 +46,7 @@ public class MenuController {
 				menunum++;
 				menuNo = menunum;
 			}
-			
+
 		} catch (SQLException e) {
 			e.printStackTrace();
 		} finally {
@@ -95,49 +95,45 @@ public class MenuController {
 		PreparedStatement psmt = null;
 
 		conn = MyConnection.getConnection();
-		
+
 		String search_menu = "select * from menu where shop_no = '"+shop_no+"'";
-			
-			try {
-				psmt = conn.prepareStatement(search_menu);
-				rs= psmt.executeQuery();
-				System.out.println("--------------------------------------------------");
-				while(true){
-					if(rs==null) {
-						System.out.println("등록된 메뉴정보가 없습니다.");
-					}
-					rs.next();
-					int menu_no = rs.getInt(2);
-					String menu_name = rs.getString(3);
-					String menu_content = rs.getString(4);
-					int menu_state = rs.getInt(5);
-					Menu menu = new Menu(shop_no,menu_no,menu_name,menu_content,menu_state);
-					menu_list.add(menu);
-					if(menu_state == 1) {
+
+		try {
+			psmt = conn.prepareStatement(search_menu);
+			rs= psmt.executeQuery();
+			System.out.println("--------------------------------------------------");
+			while(true){
+				if(rs==null) {
+					System.out.println("등록된 메뉴정보가 없습니다.");
+				}
+				rs.next();
+				int menu_no = rs.getInt(2);
+				String menu_name = rs.getString(3);
+				String menu_content = rs.getString(4);
+				int menu_state = rs.getInt(5);
+				Menu menu = new Menu(shop_no,menu_no,menu_name,menu_content,menu_state);
+				menu_list.add(menu);
+				if(menu_state == 1) {
 					System.out.println(counter+"번 메뉴 : "+menu_name+"      판매중");
 					counter++;}
-					else if(menu_state == 0) {
-						System.out.println(counter+"번 메뉴 : "+menu_name+"      판매중지");
-						counter++;
-					}
-
+				else if(menu_state == 0) {
+					System.out.println(counter+"번 메뉴 : "+menu_name+"      판매중지");
+					counter++;
 				}
-			} catch (SQLException e) {
-			}finally {
-				System.out.println("--------------------------------------------------");
-				MyConnection.close(rs,psmt,conn);
+
 			}
+		} catch (SQLException e) {
+		}finally {
+			System.out.println("--------------------------------------------------");
+			MyConnection.close(rs,psmt,conn);
+		}
 	}
 	//샵 검색 - 메뉴 조회  
 	public static void getMenusByShop(int shop_no) {
 		Connection conn = null;
 		ResultSet rs = null;
 		PreparedStatement psmt = null;
-<<<<<<< HEAD
 		int counter =1;
-=======
-		int counter = 1;
->>>>>>> 9589d84030599ff498cec2be2ec984b6ac4b113d
 		try  {
 			conn = MyConnection.getConnection();
 			String sql = "SELECT * \r\n"
@@ -150,7 +146,8 @@ public class MenuController {
 				rs = psmt.executeQuery();
 				System.out.println();
 				System.out.println("해당 상점의 메뉴 목록:");
-				System.out.println("순번\t메뉴이름\t메뉴설명\t판매상태");
+//				System.out.println("순번\t메뉴이름\t메뉴설명\t판매상태");
+				System.out.printf("%-5s%-15s%-20s%-15s\n",  "순번|", "메뉴이름|", "메뉴설명|", "판매상태");
 				System.out.println("------------------------------------------------------");
 				while (rs.next()) {
 					int shopNo = rs.getInt("SHOP_NO");
@@ -161,21 +158,15 @@ public class MenuController {
 					Menu menu = new Menu(shop_no,menuNo,menuName,menuContent,menuState);
 					menu_list.add(menu);
 					if(menuState == 1) {
-<<<<<<< HEAD
-						System.out.println(counter +"번째 메뉴 " +menuName+ "\t"+ menuContent+ "\t"+ "핀매중");
-						counter++;
-						}else if(menuState==0){
-							System.out.println(counter +"번째 메뉴 "+menuName +"\t"+ menuContent+"\t" + "핀매중지");
-							counter++;
-						}
-=======
-						System.out.println(counter + " : " + menuName+ "\t"+ menuContent+ "\t"+ "핀매중");
+//						System.out.println(counter +" : " +menuName+ "\t"+ menuContent+ "\t"+ "핀매중");
+						System.out.printf("%-5s%-15s%-20s%-15s\n",  counter, menuName, menuContent,"판매중");
 						counter++;
 					}else if(menuState==0){
-						System.out.println(counter + " : " + menuName +"\t"+ menuContent+"\t" + "핀매중지");
+						System.out.println(counter +" : "+menuName +"\t"+ menuContent+"\t" + "핀매중지");
 						counter++;
 					}
->>>>>>> 9589d84030599ff498cec2be2ec984b6ac4b113d
+//					System.out.println(counter + " : " + menuName+ "\t"+ menuContent+ "\t"+ "핀매중");
+//					counter++;
 				}
 				System.out.println("------------------------------------------------------");
 			} catch (SQLException e) {
@@ -198,7 +189,7 @@ public class MenuController {
 		Menu menu = new Menu(menu_list.get(mch-1).getShop_no(),menu_list.get(mch-1).getMenu_no(),menu_list.get(mch-1).getMenu_name(),menu_list.get(mch-1).getMenu_content(),menu_list.get(mch-1).getMenu_state());
 		System.out.println(menu.getMenu_name());
 		String sql = "update menu set menu_name=?, menu_content=?, menu_state=? where menu_no='"+menu.getMenu_no()+"'";
-		
+
 		System.out.println("메뉴 이름 입력 : ");
 		String newname = sc.nextLine();
 		System.out.println("메뉴 소개 입력 : ");
@@ -213,7 +204,7 @@ public class MenuController {
 			System.out.println("소문자 y와 n으로 입력해주세요.");
 		}
 		conn=MyConnection.getConnection();
-		
+
 		try {
 			psmt = conn.prepareStatement(sql);
 			psmt.setString(1, newname);
@@ -234,32 +225,32 @@ public class MenuController {
 	}
 
 	public static void deleteMenu(int shop_no) throws ClassNotFoundException, SQLException {
-		 Connection conn = null;
-		 ResultSet rs = null;
-		 PreparedStatement psmt = null;
-		
-		 System.out.println("삭제할 메뉴를 선택해주세요.");
-		 
-		 int mch =Integer.parseInt(sc.nextLine());
-		 Menu menu = new Menu(menu_list.get(mch-1).getShop_no(),menu_list.get(mch-1).getMenu_no(),menu_list.get(mch-1).getMenu_name(),menu_list.get(mch-1).getMenu_content(),menu_list.get(mch-1).getMenu_state());
-		 
-		 String sql = "delete from menu where shop_no='"+shop_no+"'and menu_no='"+menu.getMenu_no()+"'";
+		Connection conn = null;
+		ResultSet rs = null;
+		PreparedStatement psmt = null;
 
-		 conn = MyConnection.getConnection();
-		 try {
-			 psmt = conn.prepareStatement(sql);
-			 psmt.executeUpdate();
-			 System.out.println();
-			 System.out.println("메뉴가 삭제되었습니다!");
-			
-		 } catch (SQLException e) {
+		System.out.println("삭제할 메뉴를 선택해주세요.");
 
-		 }finally {
-			 getAllMenus(shop_no);
-			 menu_list.clear();
-			 MyConnection.close(rs, psmt, conn);
-		 }
-		
+		int mch =Integer.parseInt(sc.nextLine());
+		Menu menu = new Menu(menu_list.get(mch-1).getShop_no(),menu_list.get(mch-1).getMenu_no(),menu_list.get(mch-1).getMenu_name(),menu_list.get(mch-1).getMenu_content(),menu_list.get(mch-1).getMenu_state());
+
+		String sql = "delete from menu where shop_no='"+shop_no+"'and menu_no='"+menu.getMenu_no()+"'";
+
+		conn = MyConnection.getConnection();
+		try {
+			psmt = conn.prepareStatement(sql);
+			psmt.executeUpdate();
+			System.out.println();
+			System.out.println("메뉴가 삭제되었습니다!");
+
+		} catch (SQLException e) {
+
+		}finally {
+			getAllMenus(shop_no);
+			menu_list.clear();
+			MyConnection.close(rs, psmt, conn);
+		}
+
 	}
 
 	public static void exitProgram() {
