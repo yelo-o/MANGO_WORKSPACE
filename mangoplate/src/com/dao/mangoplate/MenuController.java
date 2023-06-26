@@ -137,6 +137,7 @@ public class MenuController {
 		Connection conn = null;
 		ResultSet rs = null;
 		PreparedStatement psmt = null;
+		int counter =1;
 		try  {
 			conn = MyConnection.getConnection();
 			String sql = "SELECT * \r\n"
@@ -160,9 +161,11 @@ public class MenuController {
 					Menu menu = new Menu(shop_no,menuNo,menuName,menuContent,menuState);
 					menu_list.add(menu);
 					if(menuState == 1) {
-						System.out.println(menuName+ "\t"+ menuContent+ "\t"+ "핀매중");
+						System.out.println(counter +"번째 메뉴 " +menuName+ "\t"+ menuContent+ "\t"+ "핀매중");
+						counter++;
 						}else if(menuState==0){
-							System.out.println(menuName +"\t"+ menuContent+"\t" + "핀매중지");
+							System.out.println(counter +"번째 메뉴 "+menuName +"\t"+ menuContent+"\t" + "핀매중지");
+							counter++;
 						}
 				}
 				System.out.println("------------------------------------------------------");

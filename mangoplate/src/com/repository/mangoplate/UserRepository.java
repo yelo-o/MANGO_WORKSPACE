@@ -144,9 +144,9 @@ public class UserRepository {
 		System.out.println("생년월일을 입력하세요.YYYYMMDD");
 		birth = sc.nextLine();
 
-		while (!(birth.matches("\\d{4}(0[1-9]|[12][0-9]|[3][01])(0[1-9]|1[012])"))) {
-			System.out.println("올바른 날짜 형식이 아닙니다. YYYYMMDD 형식으로 다시 입력해주세요.");
-			birth = sc.nextLine();         
+		  while (!(birth.matches("\\d{4}(0[1-9]|1[012])(0[1-9]|[12][0-9]|[3][01])"))) {
+		         System.out.println("올바른 날짜 형식이 아닙니다. YYYYMMDD 형식으로 다시 입력해주세요.");
+		         birth = sc.nextLine();            
 		}
 
 		User user = new User(userID, passwd, name, address, phone, email, birth, user_type);
@@ -185,7 +185,7 @@ public class UserRepository {
 			System.out.println("회원가입 되지않고 처음으로 돌아갑니다.");
 			//			e.printStackTrace();
 		} catch (SQLException e) {
-			//			e.printStackTrace();
+				e.printStackTrace();
 			System.out.println("날짜형식이 올바르지 않습니다.");
 			System.out.println("회원가입 되지않고 처음으로 돌아갑니다.");
 		} finally {

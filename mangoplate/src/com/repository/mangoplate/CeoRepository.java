@@ -64,7 +64,7 @@ public class CeoRepository {
 		}finally {
 			MyConnection.close(rs, psmt, con);
 		}
-		System.out.println("finally 밖 count : " + count);
+		
 		return count;
 	} 
 	//가게 등록 요청
@@ -78,12 +78,10 @@ public class CeoRepository {
 		try {
 		String sql = "insert into SHOP(Shop_no, shop_name, shop_state, shop_content, "
 					+ "shop_type, ceo_id) values (?,?,?,?,?,?)";
-		System.out.println("count : " + count);
+		
 		shop.setShop_no(count);
 		shop.setShop_state(0);
 
-		System.out.println("shop.getCeo_id() : " + shop.getCeo_id());
-		
 			psmt = con.prepareStatement(sql);
 			psmt.setInt(1, shop.getShop_no());
 			psmt.setString(2, shop.getShop_name());
