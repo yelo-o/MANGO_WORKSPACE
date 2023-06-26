@@ -12,7 +12,6 @@ import com.dao.mangoplate.UserController;
 import com.dto.mangoplate.User;
 
 public class UserRepository {
-	private User user;
 	static Scanner sc = new Scanner(System.in);
 
 	static String userID;
@@ -27,7 +26,6 @@ public class UserRepository {
 	//
 	static String verifiedID;
 	//
-	private static int user_type;
 	static Connection conn = null;
 	public static void login() throws ClassNotFoundException {
 		String userID;
@@ -144,9 +142,15 @@ public class UserRepository {
 		System.out.println("생년월일을 입력하세요.YYYYMMDD");
 		birth = sc.nextLine();
 
+<<<<<<< HEAD
 		  while (!(birth.matches("\\d{4}(0[1-9]|1[012])(0[1-9]|[12][0-9]|[3][01])"))) {
 		         System.out.println("올바른 날짜 형식이 아닙니다. YYYYMMDD 형식으로 다시 입력해주세요.");
 		         birth = sc.nextLine();            
+=======
+		while (!(birth.matches("\\d{4}(0[1-9]|1[012])(0[1-9]|[12][0-9]|[3][01])"))) {
+			System.out.println("올바른 날짜 형식이 아닙니다. YYYYMMDD 형식으로 다시 입력해주세요.");
+			birth = sc.nextLine();         
+>>>>>>> 9589d84030599ff498cec2be2ec984b6ac4b113d
 		}
 
 		User user = new User(userID, passwd, name, address, phone, email, birth, user_type);

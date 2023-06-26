@@ -1,7 +1,6 @@
 package com.repository.mangoplate;
 
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -36,11 +35,7 @@ public class CusRepository
 	List<Model>rate_list;
 	static List<Shop>shop_list;
 	float rating;
-	static String url = "jdbc:oracle:thin:@localhost:1521:xe";
-	static String id = "kosta";
-	static String pw = "kosta";
 	MenuController menu;
-	private static int count;
 	static Scanner sc = new Scanner(System.in); 
 	
 	
