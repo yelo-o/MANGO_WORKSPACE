@@ -18,7 +18,7 @@ public class AdminRepository {
 	UserController user = new UserController();
 	static Scanner sc = new Scanner(System.in);
 	List<Shop>shop_list;
-	
+
 	List<List<String>> tableData =new ArrayList<>();
 	static String url = "jdbc:oracle:thin:@localhost:1521:xe";
 	static String id = "kosta";
@@ -30,22 +30,15 @@ public class AdminRepository {
 	String shop_type;
 	String ceo_id;
 
-	public void searchRequest () {
-		 Connection con = null;
-		 ResultSet rs = null;
-		 PreparedStatement psmt = null;
+	public void searchRequest () throws ClassNotFoundException, SQLException {
+		Connection con = null;
+		ResultSet rs = null;
+		PreparedStatement psmt = null;
 		//상태가 0일경우 승인요청 대기중
 		String sql = "select * from shop where shop_state='0'"; 
 
-		try {
-			Class.forName("oracle.jdbc.driver.OracleDriver");
-			con = DriverManager.getConnection(url, id, pw);
-
-		} catch (ClassNotFoundException e) {
-
-		} catch (SQLException e) {
-			System.out.println("DB에 접근할수 없습니다.");
-		}
+		con= MyConnection.getConnection();
+		
 		System.out.println("승인을 요청한 음식점 목록 입니다.");
 		List<String> header = new ArrayList<>();
 		header.add("사업자번호");
@@ -95,23 +88,16 @@ public class AdminRepository {
 	}
 
 
-	public void acceptRequest() {
-		 Connection con = null;
-		 ResultSet rs = null;
-		 PreparedStatement psmt = null;
+	public void acceptRequest() throws ClassNotFoundException, SQLException {
+		Connection con = null;
+		ResultSet rs = null;
+		PreparedStatement psmt = null;
 		searchRequest();
 		System.out.println(User.verifiedAdminID+"님 승인할 가게의 사업자 번호를 입력하세요.");
 		String shop_no =  sc.nextLine();
 
-		try {
-			Class.forName("oracle.jdbc.driver.OracleDriver");
-			con = DriverManager.getConnection(url, id, pw);
-		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (SQLException e) {
-			System.out.println("DB에 접근할수 없습니다.");
-		}
+		con= MyConnection.getConnection();
+		
 		String sql = "update shop set shop_state='1' where shop_no='"+shop_no+"' and shop_state='0'";
 		try {
 			psmt = con.prepareStatement(sql);
@@ -126,24 +112,20 @@ public class AdminRepository {
 		UserController.admin_menu();
 	}
 
-	public void revokeRequest() {
-		 Connection con = null;
-		 ResultSet rs = null;
-		 PreparedStatement psmt = null;
+	public void revokeRequest() throws ClassNotFoundException, SQLException {
+		Connection con = null;
+		ResultSet rs = null;
+		PreparedStatement psmt = null;
+		
 		revokeSearchRequest();
+		
 		System.out.println("철회요청을 승인할 사업자번호를 입력해주세요.");
 		String shop_no = sc.nextLine();
+		
 		String sql = "delete from wait_shop where shop_no='"+shop_no+"'";
 		String sql2 = "delete from shop where shop_no='"+shop_no+"'";
-		try {
-			Class.forName("oracle.jdbc.driver.OracleDriver");
-			con = DriverManager.getConnection(url, id, pw);
-		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (SQLException e) {
-			System.out.println("DB에 접근할수 없습니다.");
-		}
+		
+		con= MyConnection.getConnection();
 		try {
 			psmt= con.prepareStatement(sql);
 			psmt.executeUpdate();
@@ -159,21 +141,14 @@ public class AdminRepository {
 	}
 
 
-	public void revokeSearchRequest() {
-		 Connection con = null;
-		 ResultSet rs = null;
-		 PreparedStatement psmt = null;
+	public void revokeSearchRequest() throws ClassNotFoundException, SQLException {
+		Connection con = null;
+		ResultSet rs = null;
+		PreparedStatement psmt = null;
 		String sql = "select * from wait_shop"; 
 
-		try {
-			Class.forName("oracle.jdbc.driver.OracleDriver");
-			con = DriverManager.getConnection(url, id, pw);
-
-		} catch (ClassNotFoundException e) {
-
-		} catch (SQLException e) {
-			System.out.println("DB에 접근할수 없습니다.");
-		}
+		con= MyConnection.getConnection(); 
+		
 		System.out.println("철회를 요청한 음식점 목록 입니다.");
 		List<String> header = new ArrayList<>();
 		header.add("사업자번호");
@@ -220,53 +195,29 @@ public class AdminRepository {
 
 	}
 
-	public void searchActiveShop() {
-		 Connection con = null;
-		 ResultSet rs = null;
-		 PreparedStatement psmt = null;
+	public void searchActiveShop() throws ClassNotFoundException, SQLException {
+		Connection con = null;
+		ResultSet rs = null;
+		PreparedStatement psmt = null;
 		String search_shop = "select * from shop where shop_state = '1'";
 
-		try {
-			Class.forName("oracle.jdbc.driver.OracleDriver");
-			con = DriverManager.getConnection(url, id, pw);
-
-		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (SQLException e) {
-			System.out.println("DB에 접근할수 없습니다.");
-		}
+		con= MyConnection.getConnection();
 		try {
 			psmt = con.prepareStatement(search_shop);
 			psmt.executeQuery();
 			rs = psmt.executeQuery();
 
-			while(true) {
-				rs.next();
+			while(rs.next()) {
 				shop_no=rs.getString(1);
 				shop_name = rs.getString(2);
 				shop_state = rs.getInt(3);
 				shop_type = rs.getString(5);
 				ceo_id = rs.getString(6);
-
-
+				
 				if(shop_state==1) {
 					System.out.println("-------------------------------정상 영업중인 가게입니다.--------------------------------");
 					System.out.println("가게 고유 번호 : "+shop_no+"\n가게 이름 : " +shop_name+"\n식종 : "+shop_type+"\n등록자 아이디 : "+ceo_id);
 					System.out.println("정상 영업중");
-				}
-
-				/*else if(shop_state==2) {
-						System.out.println("-------------------------------철회 요청중인 가게입니다.--------------------------------");
-						System.out.println("가게 고유 번호 : "+shop_no+"\n가게 이름 : " +shop_name+"영업 여부"+shop_state+"\n식종 : "+shop_type+"\n등록자 아이디 : "+ceo_id);
-						System.out.println("입점 철회 요청중");
-					}else if(shop_state==0) {
-						System.out.println("-------------------------------승인 대기중인 가게입니다.--------------------------------");
-						System.out.println("가게 고유 번호 : "+shop_no+"\n가게 이름 : " +shop_name+"영업 여부"+shop_state+"\n식종 : "+shop_type+"\n등록자 아이디 : "+ceo_id);
-						System.out.println("승인 대기중");
-					}*/
-				if(rs==null) {
-					break;
 				}
 			}
 		}catch(SQLException e) {
@@ -277,30 +228,21 @@ public class AdminRepository {
 	}
 
 
-	public void kickShop() {
-		 Connection con = null;
-		 ResultSet rs = null;
-		 PreparedStatement psmt = null;
+	public void kickShop() throws ClassNotFoundException, SQLException {
+		Connection con = null;
+		ResultSet rs = null;
+		PreparedStatement psmt = null;
 		String sql = "select * from shop";
 
-		try {
-			Class.forName("oracle.jdbc.driver.OracleDriver");
-			con = DriverManager.getConnection(url, id, pw);
 
-		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (SQLException e) {
-			System.out.println("DB에 접근할수 없습니다.");
-		}
+		con= MyConnection.getConnection();
 
 		try {
 			psmt = con.prepareStatement(sql);
 			psmt.executeQuery();
 			rs = psmt.executeQuery();
 
-			while(true) {
-				rs.next();
+			while(rs.next()) {
 				shop_no=rs.getString(1);
 				shop_name = rs.getString(2);
 				shop_state = rs.getInt(3);
@@ -309,10 +251,6 @@ public class AdminRepository {
 
 				System.out.println("-----------------------------------------------------------------------------");
 				System.out.println("가게 고유 번호 : "+shop_no+"\n가게 이름 : " +shop_name+"\n식종 : "+shop_type+"\n등록자 아이디 : "+ceo_id);
-				if(rs==null) {
-					break;
-				}
-
 			}
 		}catch(SQLException e) {
 		}

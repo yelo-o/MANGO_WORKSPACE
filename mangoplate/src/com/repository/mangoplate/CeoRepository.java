@@ -203,7 +203,7 @@ public class CeoRepository {
 	}
 
 
-	public void modify_shopInfo() {
+	public void modify_shopInfo() throws ClassNotFoundException, SQLException {
 		MenuController menu= new MenuController();
 		String search_name = "select * from shop where ceo_id='"+User.verifiedCeoID+"'";
 		int counter=1;
@@ -299,11 +299,11 @@ public class CeoRepository {
 
 			} else if(menu_ch.equals("2")){
 				//메뉴 수정 메소드
-				MenuController.updateMenu();
+				MenuController.menuModify(shop_list.get(shop_ch-1).getShop_no());
 
 			} else if(menu_ch.equals("3")) {
 				//메뉴 삭제
-				MenuController.deleteMenu();
+				MenuController.deleteMenu(shop_list.get(shop_ch-1).getShop_no());
 			}
 		}
 	}
