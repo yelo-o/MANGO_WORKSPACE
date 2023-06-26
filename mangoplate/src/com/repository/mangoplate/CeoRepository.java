@@ -64,7 +64,7 @@ public class CeoRepository {
 		}finally {
 			MyConnection.close(rs, psmt, con);
 		}
-		System.out.println("finally 밖 count : " + count);
+		
 		return count;
 	} 
 	//가게 등록 요청
@@ -78,12 +78,10 @@ public class CeoRepository {
 		try {
 		String sql = "insert into SHOP(Shop_no, shop_name, shop_state, shop_content, "
 					+ "shop_type, ceo_id) values (?,?,?,?,?,?)";
-		System.out.println("count : " + count);
+		
 		shop.setShop_no(count);
 		shop.setShop_state(0);
 
-		System.out.println("shop.getCeo_id() : " + shop.getCeo_id());
-		
 			psmt = con.prepareStatement(sql);
 			psmt.setInt(1, shop.getShop_no());
 			psmt.setString(2, shop.getShop_name());
@@ -203,7 +201,7 @@ public class CeoRepository {
 	}
 
 
-	public void modify_shopInfo() {
+	public void modify_shopInfo() throws ClassNotFoundException, SQLException {
 		MenuController menu= new MenuController();
 		String search_name = "select * from shop where ceo_id='"+User.verifiedCeoID+"'";
 		int counter=1;
@@ -299,11 +297,11 @@ public class CeoRepository {
 
 			} else if(menu_ch.equals("2")){
 				//메뉴 수정 메소드
-				MenuController.updateMenu();
+				MenuController.menuModify(shop_list.get(shop_ch-1).getShop_no());
 
 			} else if(menu_ch.equals("3")) {
 				//메뉴 삭제
-				MenuController.deleteMenu();
+				MenuController.deleteMenu(shop_list.get(shop_ch-1).getShop_no());
 			}
 		}
 	}

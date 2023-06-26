@@ -10,6 +10,7 @@ import com.dto.mangoplate.User;
 import com.repository.mangoplate.AdminRepository;
 import com.repository.mangoplate.CeoRepository;
 import com.repository.mangoplate.CusRepository;
+import com.repository.mangoplate.ReviewRepository;
 import com.repository.mangoplate.UserRepository;
 
 public class UserController {
@@ -31,81 +32,32 @@ public class UserController {
 	static Connection conn = null;
 
 	//로그인
-	public static void login() {
-		String userID;
-		String passwd;
+	
 
-		System.out.println("ID를 입력하세요");
-		userID = sc.nextLine();
-		System.out.println("비밀번호를 입력하세요");
-		passwd = sc.nextLine();
-
-		try {
-			conn = MyConnection.getConnection();
-		} catch (ClassNotFoundException | SQLException e) {
-			e.printStackTrace();
-			return;
-		}
-		PreparedStatement pstmt = null;
-		ResultSet rs = null;
-
-		String loginSQL =
-				"SELECT name, user_type, userid, passwd\r\n"
-						+ "FROM mango_user\r\n"
-						+ "WHERE userid = ? AND passwd = ?";
-		try {
-			pstmt = conn.prepareStatement(loginSQL);
-			pstmt.setString(1, userID);
-			pstmt.setString(2, passwd);
-			rs = pstmt.executeQuery();
-			if(!rs.next()) {
-				throw new SQLException();
-			} else {
-				String user_name = rs.getString(1);
-				int user_type = rs.getInt(2);
-				String user_ID = rs.getString(3);
-				System.out.println("안녕하세요 " +user_name+"님 반갑습니다.");
-
-				if (user_type == 1) {
-					User.verifiedCeoID = user_ID; //로그인된 점주 아이디 저장
-					ceo_menu();
-				} else if (user_type == 2) {
-					User.verifiedCustomerID = user_ID; //로그인된 사용자 아이디 저장
-					cus_menu();
-				}else if(user_type == 0) {
-					User.verifiedAdminID = user_ID;
-					admin_menu();
-				}
-			}
-
-		} catch (SQLException e) {
-			System.out.println("ID 혹은 비밀번호가 일치하지 않습니다");
-		} finally {
-			MyConnection.close(rs, pstmt, conn);
-		}			
-	}
-
-	public static void shop_menu(int selectShop) {
+	public static void shop_menu(int selectShop) throws ClassNotFoundException, SQLException {
 		CusRepository CusRep = new CusRepository();
-		System.out.println("1 : 메뉴보기, 2 : 후기보기, 3 : 후기작성");
+		System.out.println("1 : 메뉴보기, 2 : 후기보기, 3 : 후기작성, 4 : 처음으로 돌아가기");
 		String cus_ch = sc.nextLine();
 
 		if (cus_ch.equals("1")) {
 			//메뉴보기
 			MenuController.getMenusByShop(selectShop);
-
+			shop_menu(selectShop);
 		} else if (cus_ch.equals("2")) {
 			//후기보기
-			ReviewController.readReaview(selectShop);
-
+			ReviewRepository.readReaview(selectShop);
+			shop_menu(selectShop);
 		} else if (cus_ch.equals("3")) {
 			//후기작성
-			ReviewController.insertReview(selectShop);
-
+			ReviewRepository.insertReview(selectShop);
+			shop_menu(selectShop);
+			
+		}else if(cus_ch.equals("4")) {
+			UserController.cus_menu();
 		}
 	}
 	//일반고객 페이지
-	public static void cus_menu() {
+	public static void cus_menu() throws ClassNotFoundException, SQLException {
 		System.out.println("망고플레이트에 오신걸 환영합니다!");
 		System.out.println("원하시는 기능을 선택해주세요!");
 		System.out.println("1 : 음식점 조회, 2 : 음식점 검색, 3 : 내 리뷰 보기, 4 : 회원정보 수정");
@@ -139,15 +91,16 @@ public class UserController {
 			shop_menu(select);
 		} else if (cus_ch.equals("3")) {
 			//3. 내 리뷰 보기 메소드 호출
-			ReviewController.readMyReview();
-			
+			ReviewRepository.readMyReview();
+			UserController.cus_menu();
 
 		} else if (cus_ch.equals("4")) {
 			//4. 회원정보 수정 메소드 호출
 			UserRepository.user_modify();
+			UserController.cus_menu();
 		}
 	}
-	public static void ceo_menu() {
+	public static void ceo_menu() throws ClassNotFoundException, SQLException {
 		CeoRepository ceo = new CeoRepository();
 		
 		System.out.println("점주님 음식점 관리 메뉴를 보여드릴게요!");
@@ -178,10 +131,10 @@ public class UserController {
 
 	}
 	
-	public static void admin_menu() {
+	public static void admin_menu() throws ClassNotFoundException, SQLException {
 		if(user_type != 0) {
 			System.out.println("나가!");
-			login();
+			UserRepository.login();
 		}
 		System.out.println("원하시는 기능을 선택해주세요");
 		System.out.println("1 : 음식점 승인요청, 2 : 음식점 철회요청, 3 : 활동 중인 음식점 조회, 4 : 음식점 강제 철회 9 : 종료");

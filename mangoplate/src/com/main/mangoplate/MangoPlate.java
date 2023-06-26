@@ -88,12 +88,12 @@ import com.repository.mangoplate.UserRepository;
 public class MangoPlate {
 
    @SuppressWarnings("static-access")
-   public static void main(String[] args) {
+   public static void main(String[] args) throws ClassNotFoundException {
       // TODO Auto-generated method stub
       MangoPlate mango = new MangoPlate();
       UserController user = new UserController();
       Scanner sc = new Scanner(System.in);
-      String func_ch,ceo_ch,cus_ch,adin_ch,login_ch;
+      String login_ch;
       String register_ch;
       do {
          System.out.println("안녕하세요! 망고 플레이트 입니다! - ver.Console");
@@ -101,7 +101,7 @@ public class MangoPlate {
          login_ch = sc.nextLine();
          //로그인
          if(login_ch.equals("1")) {
-            user.login();
+            UserRepository.login();
          }//가입
          else if(login_ch.equals("2")) {
          
@@ -109,14 +109,15 @@ public class MangoPlate {
             register_ch = sc.nextLine();
             
             if(register_ch.equals("1")) {
-                UserRepository.register(1);
+            	//일반고객 usertype=2
+                UserRepository.register(2);
             }	
             else if(register_ch.equals("2")) {
-               //점주 고객
-            	UserRepository.register(2);
+               //점주 고객 usertype=1
+            	UserRepository.register(1);
             }
             else if(register_ch.equals("iamadmin")) {
-               //관리자
+               //관리자 usertype=2=0
             	UserRepository.register(0);
             }
             mango.main(args);
