@@ -8,7 +8,7 @@ public class Shop {
 	private String shop_content;
 	private String shop_type;
 	private String ceo_id;
-
+	public int selectShopNo;
 	public Shop() {
 		
 	}

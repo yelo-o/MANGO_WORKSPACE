@@ -11,11 +11,10 @@ public class MyConnection {
 		Class.forName("oracle.jdbc.OracleDriver");
 		Connection conn = null;
 		String url = "jdbc:oracle:thin:@localhost:1521/xe";
-		String user = "localmg";
-		String password = "localmg";
+		String user = "kosta";
+		String password = "kosta";
 		
 		conn = DriverManager.getConnection(url, user, password);
-		System.out.println("연결 성공");
 		return conn;
 	}
 	

@@ -4,6 +4,9 @@ import java.util.Date;
 
 public class User {
 
+	public static String verifiedCeoID;
+	public static String verifiedCustomerID;
+	public static String verifiedAdminID;
 	private String name;
 	private String address;
 	private String userID;
@@ -12,8 +15,6 @@ public class User {
 	private String phone;
 	private String birth;
 	private int user_type;
-	public static String verifiedCeoID;
-	public static String verifiedCustomerID;
 	
 	public User() {
 		
