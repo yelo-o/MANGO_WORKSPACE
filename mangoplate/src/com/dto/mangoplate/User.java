@@ -1,6 +1,5 @@
 package com.dto.mangoplate;
 
-import java.util.Date;
 
 public class User {
 

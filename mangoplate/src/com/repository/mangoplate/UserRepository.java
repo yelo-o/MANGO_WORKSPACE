@@ -12,7 +12,6 @@ import com.dao.mangoplate.UserController;
 import com.dto.mangoplate.User;
 
 public class UserRepository {
-	private User user;
 	static Scanner sc = new Scanner(System.in);
 
 	static String userID;
@@ -27,7 +26,6 @@ public class UserRepository {
 	//
 	static String verifiedID;
 	//
-	private static int user_type;
 	static Connection conn = null;
 	public static void login() throws ClassNotFoundException {
 		String userID;
