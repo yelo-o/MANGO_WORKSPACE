@@ -1,10 +1,6 @@
 package com.dao.mangoplate;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -61,8 +57,6 @@ public class MenuController {
 		System.out.println("메뉴 설명을 입력하세요: ");
 		String menuContent = sc.nextLine();
 
-		//menu state 무조건1이되도록 // 메뉴슈정에서 0으로 만들어 판매중지되도록ㅁ낟르기 
-		int menuState = 0;
 
 		String sql = "INSERT INTO MENU (SHOP_NO, MENU_NO, MENU_NAME, MENU_CONTENT, MENU_STATE) "
 				+ "VALUES (?, ?, ?, ?, ?)";
@@ -74,7 +68,8 @@ public class MenuController {
 			stmt.setInt(2, menuNo);
 			stmt.setString(3, menuName);
 			stmt.setString(4, menuContent);
-			stmt.setInt(5, menuState);
+			stmt.setInt(5, 1);
+			//menu state 무조건1이되도록 // 메뉴슈정에서 0으로 만들어 판매중지되도록ㅁ낟르기 
 
 			int rowsAffected = stmt.executeUpdate();
 
@@ -137,6 +132,7 @@ public class MenuController {
 		Connection conn = null;
 		ResultSet rs = null;
 		PreparedStatement psmt = null;
+		int counter = 1;
 		try  {
 			conn = MyConnection.getConnection();
 			String sql = "SELECT * \r\n"
@@ -149,7 +145,7 @@ public class MenuController {
 				rs = psmt.executeQuery();
 				System.out.println();
 				System.out.println("해당 상점의 메뉴 목록:");
-				System.out.println("메뉴이름\t메뉴설명\t판매상태");
+				System.out.println("순번\t메뉴이름\t메뉴설명\t판매상태");
 				System.out.println("------------------------------------------------------");
 				while (rs.next()) {
 					int shopNo = rs.getInt("SHOP_NO");
@@ -160,10 +156,12 @@ public class MenuController {
 					Menu menu = new Menu(shop_no,menuNo,menuName,menuContent,menuState);
 					menu_list.add(menu);
 					if(menuState == 1) {
-						System.out.println(menuName+ "\t"+ menuContent+ "\t"+ "핀매중");
-						}else if(menuState==0){
-							System.out.println(menuName +"\t"+ menuContent+"\t" + "핀매중지");
-						}
+						System.out.println(counter + " : " + menuName+ "\t"+ menuContent+ "\t"+ "핀매중");
+						counter++;
+					}else if(menuState==0){
+						System.out.println(counter + " : " + menuName +"\t"+ menuContent+"\t" + "핀매중지");
+						counter++;
+					}
 				}
 				System.out.println("------------------------------------------------------");
 			} catch (SQLException e) {

@@ -204,7 +204,6 @@ public class CeoRepository {
 
 
 	public void modify_shopInfo() throws ClassNotFoundException, SQLException {
-		MenuController menu= new MenuController();
 		String search_name = "select * from shop where ceo_id='"+User.verifiedCeoID+"'";
 		int counter=1;
 		try {
