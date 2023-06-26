@@ -72,8 +72,7 @@ public class ReviewController {
 			count = num_max();
 			count++;
 
-			String sql = "INSERT INTO shop_review(shop_no, review_no, writer, review_content,\r\n"
-					+ "review_date, review_rating)\r\n"
+			String sql = "INSERT INTO shop_review(shop_no, review_no, writer, review_content, review_date,rating)\r\n"
 					+ "VALUES(?, ?, ?, ?, SYSDATE, ?)";
 
 			pstmt = conn.prepareStatement(sql);
@@ -117,7 +116,7 @@ public class ReviewController {
 				String reviewWriter = rs.getString("writer");
 				String reviewContent = rs.getString("review_content");
 				Date reviewDate = rs.getDate("review_date");
-				int reviewRating = rs.getInt("review_rating");
+				int reviewRating = rs.getInt("rating");
 				System.out.printf("%-10s%-15s%-12s%-20s%-40s\n", reviewNo, reviewWriter, reviewRating, reviewDate, reviewContent);
 				count++;
 			}
@@ -142,6 +141,7 @@ public class ReviewController {
 
 			pstmt = conn.prepareStatement(sql);
 			rs = pstmt.executeQuery();
+			System.out.println();
 			System.out.printf("%-10s%-15s%-12s%-20s%-40s\n", 
 					          "리뷰번호", "작성자", "별점", "작성일자", "리뷰 내용");
 			
@@ -150,13 +150,13 @@ public class ReviewController {
 				String reviewWriter = rs.getString("writer");
 				String reviewContent = rs.getString("review_content");
 				Date reviewDate = rs.getDate("review_date");
-				int reviewRating = rs.getInt("review_rating");
+				int reviewRating = rs.getInt("rating");
 				System.out.printf("%-10s%-15s%-12s%-20s%-40s\n", reviewNo, reviewWriter,
 						     	  reviewRating, reviewDate, reviewContent);
 			}
 			//보조메뉴 꾸미기
 			System.out.println("******************************************************************************");
-			System.out.println("*****************************************보조메뉴: 1.리뷰 수정 | 2.리뷰 삭제 | 9.종료**");
+			System.out.println("*********************보조메뉴: 1.리뷰 수정 | 2.리뷰 삭제 | 9.종료**********************");
 			System.out.println("******************************************************************************");
 			System.out.println();
 			

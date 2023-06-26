@@ -1,4 +1,4 @@
-package com.dao.mangoplate;
+package com.repository.mangoplate;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -9,12 +9,15 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
+import com.dao.mangoplate.MenuController;
+import com.dao.mangoplate.MyConnection;
+import com.dao.mangoplate.UserController;
 import com.dto.mangoplate.Shop;
 import com.dto.mangoplate.User;
 
-public class shopController {
+public class CeoRepository {
 	Scanner sc = new Scanner(System.in);
-
+	
 	Shop shop;
 	int shop_no;
 	String shop_name;
@@ -29,14 +32,8 @@ public class shopController {
 	Connection con = null;
 	ResultSet rs = null;
 	PreparedStatement psmt = null;
-
-	public shopController(){
-	}
-
-	public shopController(Shop shop){
-	}
-
-	public void ceo_page() {
+	
+	public void insert_info() {
 		System.out.println("가게 이름을 적어주세요.");
 		shop_name = sc.nextLine();
 		System.out.println("가게를 소개해주세요.");
@@ -45,9 +42,7 @@ public class shopController {
 		shop_type = sc.nextLine();
 
 		Shop shop = new Shop(shop_name, shop_content, shop_type, User.verifiedCeoID);
-		shopController shopCon = new shopController();
-		shopCon.insert(shop);
-		userController.ceo_menu();
+		insert(shop);
 	}
 
 	public int num_max() {
@@ -157,7 +152,7 @@ public class shopController {
 		//userController.ceo_menu(ceo_id);
 	}
 
-	public void revokeShop_Request(int user_type) {
+	public void revokeShop_Request() {
 		try {
 			con = MyConnection.getConnection();
 		} catch (ClassNotFoundException | SQLException e) {
@@ -172,16 +167,17 @@ public class shopController {
 			psmt.executeUpdate();
 			psmt.executeUpdate(sql2);
 			System.out.println("철회신청이 완료되었습니다.");
+			System.out.println();
 		} catch (SQLException e) {
 		}finally {
 			MyConnection.close(rs, psmt, con);
 		}
-		userController.ceo_menu();
+		
 	}
 
 
 
-	public void revokeCancel_Request(int user_type) {
+	public void revokeCancel_Request() {
 		try {
 			con = MyConnection.getConnection();
 		} catch (ClassNotFoundException | SQLException e) {
@@ -198,11 +194,12 @@ public class shopController {
 			psmt.executeUpdate(sql2);
 			psmt.executeUpdate(sql3);
 			System.out.println("철회 취소 신청이 완료되었습니다.");
+			System.out.println();
 		} catch (SQLException e) {
 		}finally {
 			MyConnection.close(rs, psmt, con);
 		}
-		userController.ceo_menu();
+		
 	}
 
 
@@ -237,6 +234,7 @@ public class shopController {
 			}
 		} catch (SQLException e) {
 		}
+		System.out.println();
 		System.out.println("수정할 가게 선택");
 		int shop_ch = Integer.parseInt(sc.nextLine());
 		System.out.println("1 : 음식점 정보 수정, 2 : 메뉴 수정");
@@ -266,6 +264,7 @@ public class shopController {
 				psmt.executeUpdate();
 
 				System.out.println("변경 완료!");
+				System.out.println();
 			} catch (SQLException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -275,7 +274,7 @@ public class shopController {
 		} else if(modi_ch.equals("2")) { //2 : 메뉴 수정
 			shop =new Shop(shop_list.get(shop_ch-1).getShop_no(),shop_list.get(shop_ch-1).getShop_name(),shop_list.get(shop_ch-1).getShop_state(),shop_list.get(shop_ch-1).getShop_content(),shop_list.get(shop_ch-1).getShop_type(),shop_list.get(shop_ch-1).getCeo_id());
 			String name = shop_list.get(shop_ch-1).getShop_name();
-			MenuController.getMenusByShop(name);
+			MenuController.getMenusByShop(shop.getShop_no());
 
 			System.out.println("1 : 메뉴 추가, 2 : 메뉴 수정, 3 : 메뉴 삭제");
 			String menu_ch = sc.nextLine();
@@ -307,10 +306,6 @@ public class shopController {
 				MenuController.deleteMenu();
 			}
 		}
-		userController.ceo_menu();
 	}
 
 }
-
-
-

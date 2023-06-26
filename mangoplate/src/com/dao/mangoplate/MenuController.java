@@ -22,7 +22,7 @@ public class MenuController {
 	//메뉴추가
 	public static void addMenu(int shop_no) {
 
-		System.out.println("메뉴 등록을 시작합니다.");
+		System.out.println("메뉴를 등록합니다.");
 		int shopNo = shop_no;
 		String Maxsql = "SELECT MAX(MENU_NO) FROM MENU";
 
@@ -49,9 +49,9 @@ public class MenuController {
 			MyConnection.close(rs, psmt, conn);
 		}
 
-		System.out.println("MENU_NAME을 입력하세요: ");
+		System.out.println("메뉴 이름을 입력하세요: ");
 		String menuName = sc.nextLine();
-		System.out.println("MENU_CONTENT를 입력하세요: ");
+		System.out.println("메뉴 설명을 입력하세요: ");
 		String menuContent = sc.nextLine();
 
 		//menu state 무조건1이되도록 // 메뉴슈정에서 0으로 만들어 판매중지되도록ㅁ낟르기 
@@ -86,7 +86,6 @@ public class MenuController {
 
 	//모든 메뉴 조회
 	public static void getAllMenus() {
-		
 		//DB연결 준비
 		try {
 			conn = MyConnection.getConnection();
@@ -101,23 +100,23 @@ public class MenuController {
 					+ "WHERE shop_state=1";
 			psmt = conn.prepareStatement(sql);
 			ResultSet rs = psmt.executeQuery();
+			System.out.println();
+			
 			System.out.println("전체 메뉴 목록:");
 			System.out.println("------------------------------------------------------");
-			System.out.println("SHOP_NO\tMENU_NO\tMENU_NAME\tMENU_CONTENT\tMENU_STATE");
-			System.out.println("------------------------------------------------------");
-			
+			System.out.println("메뉴이름\t메뉴설명\t판매상태");
 			while (rs.next()) {
-				int shopNo = rs.getInt("SHOP_NO");
-				int menuNo = rs.getInt("MENU_NO");
 				String menuName = rs.getString("MENU_NAME");
 				String menuContent = rs.getString("MENU_CONTENT");
-				boolean menuState = rs.getBoolean("MENU_STATE");
-				
-//				System.out.printf("%i\t%i\t%s\t%s\t%s%n", shopNo, menuNo, menuName, menuContent, menuState);
-				System.out.println(shopNo +  menuNo + menuName + menuContent + menuState);
-//				System.out.println(menuNo + menuName + menuContent + menuState);
-				
+				int menuState = rs.getInt("MENU_STATE");
+				String shopName = rs.getString("SHOP_NAME");
+				if(menuState == 1) {
+				System.out.println(menuName + menuContent + "핀매중");
 				System.out.println("------------------------------------------------------");
+				}else if(menuState==0){
+					System.out.println(menuName + menuContent + "핀매중지");
+					System.out.println("------------------------------------------------------");
+				}
 			}
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
@@ -144,23 +143,23 @@ public class MenuController {
 				
 				psmt = conn.prepareStatement(sql);
 				ResultSet rs = psmt.executeQuery();
+				System.out.println();
 				System.out.println("전체 메뉴 목록:");
 				System.out.println("------------------------------------------------------");
-				System.out.println("SHOP_NO\tMENU_NO\tMENU_NAME\tMENU_CONTENT\tMENU_STATE");
-				System.out.println("------------------------------------------------------");
-				
+				System.out.println("메뉴이름\t메뉴설명\t판매상태");
 				while (rs.next()) {
 					int shopNo = rs.getInt("SHOP_NO");
 					int menuNo = rs.getInt("MENU_NO");
 					String menuName = rs.getString("MENU_NAME");
 					String menuContent = rs.getString("MENU_CONTENT");
-					boolean menuState = rs.getBoolean("MENU_STATE");
-					
-					System.out.printf("%s\t%s\t%s\t%s\t%s%n", shopNo, menuNo, menuName, menuContent, menuState);
-//					System.out.println(shopNo +  menuNo + menuName + menuContent + menuState);
-//					System.out.println(menuNo + menuName + menuContent + menuState);
-					
-					System.out.println("------------------------------------------------------");
+					int menuState = rs.getInt("MENU_STATE");
+					if(menuState == 1) {
+						System.out.println(menuName+ "\t"+ menuContent+ "\t"+ "핀매중");
+						System.out.println("------------------------------------------------------");
+						}else if(menuState==0){
+							System.out.println(menuName +"\t"+ menuContent+"\t" + "핀매중지");
+							System.out.println("------------------------------------------------------");
+						}
 				}
 			} catch (SQLException e) {
 				e.printStackTrace();
@@ -171,37 +170,35 @@ public class MenuController {
 	
 	
 	//샵 검색 - 메뉴 조회  
-	public static void getMenusByShop(String shopName) {
+	public static void getMenusByShop(int shop_no) {
 		try (Connection conn = MyConnection.getConnection()) {
 			String sql = "SELECT * \r\n"
 					+ "FROM SHOP JOIN MENU ON(shop.shop_no=menu.shop_no) \r\n"
-					+ "WHERE shop.shop_name= ?";
+					+ "WHERE shop.shop_no= ?";
 
 			try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-				stmt.setString(1, shopName);
+				stmt.setInt(1, shop_no);
 				ResultSet rs = stmt.executeQuery();
-
+				System.out.println();
 				System.out.println("해당 상점의 메뉴 목록:");
+				System.out.println("메뉴이름\t메뉴설명\t판매상태");
 				System.out.println("------------------------------------------------------");
-				System.out.println("MENU_NO\tMENU_NAME\tMENU_CONTENT\tMENU_STATE");
-				System.out.println("------------------------------------------------------");
-
 				while (rs.next()) {
-					String menuNo = rs.getString("MENU_NO");
+					int shopNo = rs.getInt("SHOP_NO");
+					int menuNo = rs.getInt("MENU_NO");
 					String menuName = rs.getString("MENU_NAME");
 					String menuContent = rs.getString("MENU_CONTENT");
-					boolean menuState = rs.getBoolean("MENU_STATE");
-
-					System.out.println( menuNo + menuName + menuContent + menuState);
+					int menuState = rs.getInt("MENU_STATE");
+					if(menuState == 1) {
+						System.out.println(menuName+ "\t"+ menuContent+ "\t"+ "핀매중");
+						}else if(menuState==0){
+							System.out.println(menuName +"\t"+ menuContent+"\t" + "핀매중지");
+						}
 				}
-
 				System.out.println("------------------------------------------------------");
-
-				rs.close();
 			} catch (SQLException e) {
 				System.out.println("메뉴 조회 중 오류가 발생했습니다: " + e.getMessage());
 			}
-
 		} catch (ClassNotFoundException | SQLException e) {
 			System.out.println("데이터베이스 연결 중 오류가 발생했습니다: " + e.getMessage());
 		} finally {
