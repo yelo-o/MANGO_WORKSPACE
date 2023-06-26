@@ -4,24 +4,31 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.sql.Connection;
+import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.SQLIntegrityConstraintViolationException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
+
+import com.dto.mangoplate.Menu;
 
 //클래스 메뉴컨트롤러
 public class MenuController {
 
 
 	static Scanner sc = new Scanner(System.in);
-
-	static Connection conn = null;
-	static ResultSet rs = null;
-	static PreparedStatement psmt = null;
+	static List<Menu>menu_list = new ArrayList<Menu>();
+	
 
 	//메뉴추가
 	public static void addMenu(int shop_no) {
-
+		Connection conn = null;
+		ResultSet rs = null;
+		PreparedStatement psmt = null;
+		
 		System.out.println("메뉴를 등록합니다.");
 		int shopNo = shop_no;
 		String Maxsql = "SELECT MAX(MENU_NO) FROM MENU";
@@ -85,100 +92,61 @@ public class MenuController {
 	}
 
 	//모든 메뉴 조회
-	public static void getAllMenus() {
-		//DB연결 준비
-		try {
-			conn = MyConnection.getConnection();
-		} catch (ClassNotFoundException | SQLException e) {
-			e.printStackTrace();
-		}
+	public static void getAllMenus(int shop_no) throws ClassNotFoundException, SQLException {
+		int counter=1;
+		Connection conn = null;
+		ResultSet rs = null;
+		PreparedStatement psmt = null;
 
-		try {
-			// where 샵 스테이트 1인 애만 검색)
-			String sql = "SELECT *\r\n"
-					+ "FROM SHOP JOIN MENU ON(shop.shop_no=menu.shop_no)\r\n"
-					+ "WHERE shop_state=1";
-			psmt = conn.prepareStatement(sql);
-			ResultSet rs = psmt.executeQuery();
-			System.out.println();
+		conn = MyConnection.getConnection();
+		
+		String search_menu = "select * from menu where shop_no = '"+shop_no+"'";
 			
-			System.out.println("전체 메뉴 목록:");
-			System.out.println("------------------------------------------------------");
-			System.out.println("메뉴이름\t메뉴설명\t판매상태");
-			while (rs.next()) {
-				String menuName = rs.getString("MENU_NAME");
-				String menuContent = rs.getString("MENU_CONTENT");
-				int menuState = rs.getInt("MENU_STATE");
-				String shopName = rs.getString("SHOP_NAME");
-				if(menuState == 1) {
-				System.out.println(menuName + menuContent + "핀매중");
-				System.out.println("------------------------------------------------------");
-				}else if(menuState==0){
-					System.out.println(menuName + menuContent + "핀매중지");
-					System.out.println("------------------------------------------------------");
-				}
-			}
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} finally {
-			MyConnection.close(rs, psmt, conn);
-		}
-	}
-	//모든 메뉴 조회
-		public static void getAllMenus(int shop_no) {
-			
-			//DB연결 준비
 			try {
-				conn = MyConnection.getConnection();
-			} catch (ClassNotFoundException | SQLException e) {
-				e.printStackTrace();
-			}
+				psmt = conn.prepareStatement(search_menu);
+				rs= psmt.executeQuery();
+				System.out.println("--------------------------------------------------");
+				while(true){
+					if(rs==null) {
+						System.out.println("등록된 메뉴정보가 없습니다.");
+					}
+					rs.next();
+					int menu_no = rs.getInt(2);
+					String menu_name = rs.getString(3);
+					String menu_content = rs.getString(4);
+					int menu_state = rs.getInt(5);
+					Menu menu = new Menu(shop_no,menu_no,menu_name,menu_content,menu_state);
+					menu_list.add(menu);
+					if(menu_state == 1) {
+					System.out.println(counter+"번 메뉴 : "+menu_name+"      판매중");
+					counter++;}
+					else if(menu_state == 0) {
+						System.out.println(counter+"번 메뉴 : "+menu_name+"      판매중지");
+						counter++;
+					}
 
-			try {
-				// where 샵 스테이트 1인 애만 검색)
-				String sql = "SELECT *\r\n"
-						+ "FROM SHOP JOIN MENU ON(shop.shop_no=menu.shop_no)\r\n"
-						+ "WHERE shop_state=1 AND menu.shop_no ="+ shop_no +"";
-				
-				psmt = conn.prepareStatement(sql);
-				ResultSet rs = psmt.executeQuery();
-				System.out.println();
-				System.out.println("전체 메뉴 목록:");
-				System.out.println("------------------------------------------------------");
-				System.out.println("메뉴이름\t메뉴설명\t판매상태");
-				while (rs.next()) {
-					int shopNo = rs.getInt("SHOP_NO");
-					int menuNo = rs.getInt("MENU_NO");
-					String menuName = rs.getString("MENU_NAME");
-					String menuContent = rs.getString("MENU_CONTENT");
-					int menuState = rs.getInt("MENU_STATE");
-					if(menuState == 1) {
-						System.out.println(menuName+ "\t"+ menuContent+ "\t"+ "핀매중");
-						System.out.println("------------------------------------------------------");
-						}else if(menuState==0){
-							System.out.println(menuName +"\t"+ menuContent+"\t" + "핀매중지");
-							System.out.println("------------------------------------------------------");
-						}
 				}
 			} catch (SQLException e) {
-				e.printStackTrace();
-			} finally {
-				MyConnection.close(rs, psmt, conn);
+			}finally {
+				System.out.println("--------------------------------------------------");
+				MyConnection.close(rs,psmt,conn);
 			}
-		}
-	
-	
+	}
 	//샵 검색 - 메뉴 조회  
 	public static void getMenusByShop(int shop_no) {
-		try (Connection conn = MyConnection.getConnection()) {
+		Connection conn = null;
+		ResultSet rs = null;
+		PreparedStatement psmt = null;
+		try  {
+			conn = MyConnection.getConnection();
 			String sql = "SELECT * \r\n"
 					+ "FROM SHOP JOIN MENU ON(shop.shop_no=menu.shop_no) \r\n"
 					+ "WHERE shop.shop_no= ?";
 
-			try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-				stmt.setInt(1, shop_no);
-				ResultSet rs = stmt.executeQuery();
+			try{
+				psmt = conn.prepareStatement(sql);
+				psmt.setInt(1, shop_no);
+				rs = psmt.executeQuery();
 				System.out.println();
 				System.out.println("해당 상점의 메뉴 목록:");
 				System.out.println("메뉴이름\t메뉴설명\t판매상태");
@@ -189,6 +157,8 @@ public class MenuController {
 					String menuName = rs.getString("MENU_NAME");
 					String menuContent = rs.getString("MENU_CONTENT");
 					int menuState = rs.getInt("MENU_STATE");
+					Menu menu = new Menu(shop_no,menuNo,menuName,menuContent,menuState);
+					menu_list.add(menu);
 					if(menuState == 1) {
 						System.out.println(menuName+ "\t"+ menuContent+ "\t"+ "핀매중");
 						}else if(menuState==0){
@@ -206,122 +176,78 @@ public class MenuController {
 		}
 	}
 
-	public static void updateMenu() {
-		//샵넘버 메뉴넘버빼기 기본과정만 
-		// menu control [list써서 1234어쩌고 메뉴수정 와일문써서 ]
-
-		System.out.println("메뉴 수정을 시작합니다.");
-
-		System.out.println("SHOP_NO를 입력하세요: ");
-		String searchShopNo = sc.nextLine();
-
-		System.out.println("MENU_NO를 입력하세요: ");
-		String searchMenuNo = sc.nextLine();
-
+	public static void menuModify(int shop_no) throws ClassNotFoundException, SQLException {
+		Connection conn = null;
+		ResultSet rs = null;
+		PreparedStatement psmt = null;
+		//int state = 0;
+		System.out.println("수정할 메뉴를 골라주세요.");
+		int mch =Integer.parseInt(sc.nextLine());
+		Menu menu = new Menu(menu_list.get(mch-1).getShop_no(),menu_list.get(mch-1).getMenu_no(),menu_list.get(mch-1).getMenu_name(),menu_list.get(mch-1).getMenu_content(),menu_list.get(mch-1).getMenu_state());
+		System.out.println(menu.getMenu_name());
+		String sql = "update menu set menu_name=?, menu_content=?, menu_state=? where menu_no='"+menu.getMenu_no()+"'";
+		
+		System.out.println("메뉴 이름 입력 : ");
+		String newname = sc.nextLine();
+		System.out.println("메뉴 소개 입력 : ");
+		String newcontent = sc.nextLine();
+		System.out.println("메뉴를 판매 중지 하시겠습니까? y/n");
+		String yn = sc.nextLine();
+		if(yn.equals("y")) {
+			menu.setMenu_state(0);
+		}else if(yn.equals("n")) {
+			menu.setMenu_state(1);
+		}else {
+			System.out.println("소문자 y와 n으로 입력해주세요.");
+		}
+		conn=MyConnection.getConnection();
+		
 		try {
-			conn = MyConnection.getConnection();
+			psmt = conn.prepareStatement(sql);
+			psmt.setString(1, newname);
+			psmt.setString(2, newcontent);
+			psmt.setInt(3, menu.getMenu_state());
+			psmt.executeUpdate();
+			System.out.println("메뉴수정 완료!");
+		}catch(SQLIntegrityConstraintViolationException e) {
 
-			String sql = "SELECT * FROM MENU WHERE SHOP_NO = ? AND MENU_NO = ?";
-
-			PreparedStatement stmt = conn.prepareStatement(sql);
-			stmt.setString(1, searchShopNo);
-			stmt.setString(2, searchMenuNo);
-			ResultSet rs = stmt.executeQuery();
-
-			if (rs.next()) {
-				System.out.println("메뉴 정보:");
-				System.out.println("SHOP_NO: " + rs.getString("SHOP_NO"));
-				System.out.println("MENU_NO: " + rs.getString("MENU_NO"));
-				System.out.println("MENU_NAME: " + rs.getString("MENU_NAME"));
-				System.out.println("MENU_CONTENT: " + rs.getString("MENU_CONTENT"));
-				System.out.println("MENU_STATE: " + rs.getBoolean("MENU_STATE"));
-
-				System.out.println("수정할 내용을 입력하세요.");
-				System.out.println("수정할 MENU_NAME을 입력하세요: ");
-				String updatedMenuName = sc.nextLine();
-
-				sql = "UPDATE MENU SET MENU_NAME = ? WHERE SHOP_NO = ? AND MENU_NO = ?";
-
-				PreparedStatement updateStmt = conn.prepareStatement(sql);
-				updateStmt.setString(1, updatedMenuName);
-				updateStmt.setString(2, searchShopNo);
-				updateStmt.setString(3, searchMenuNo);
-				int rowsAffected = updateStmt.executeUpdate();
-
-				if (rowsAffected > 0) {
-					System.out.println("메뉴 이름이 변경되었습니다. 변경된 메뉴 이름: " + updatedMenuName);
-				} else {
-					System.out.println("메뉴 수정에 실패했습니다.");
-				}
-
-			} else {
-				System.out.println("일치하는 메뉴가 없습니다.");
-			}
-
-			rs.close();
-		} catch (ClassNotFoundException | SQLException e) {
-			// TODO Auto-generated catch block
+		}catch (SQLException e) {
+			System.out.println("구문입력 오류");
 			e.printStackTrace();
-		} finally {
+		}
+		finally{	
+			menu_list.clear();
 			MyConnection.close(rs, psmt, conn);
 		}
 	}
 
-	public static void deleteMenu() {
-		System.out.println("메뉴 삭제를 시작합니다.");
+	public static void deleteMenu(int shop_no) throws ClassNotFoundException, SQLException {
+		 Connection conn = null;
+		 ResultSet rs = null;
+		 PreparedStatement psmt = null;
+		
+		 System.out.println("삭제할 메뉴를 선택해주세요.");
+		 
+		 int mch =Integer.parseInt(sc.nextLine());
+		 Menu menu = new Menu(menu_list.get(mch-1).getShop_no(),menu_list.get(mch-1).getMenu_no(),menu_list.get(mch-1).getMenu_name(),menu_list.get(mch-1).getMenu_content(),menu_list.get(mch-1).getMenu_state());
+		 
+		 String sql = "delete from menu where shop_no='"+shop_no+"'and menu_no='"+menu.getMenu_no()+"'";
 
-		System.out.println("SHOP_NO를 입력하세요: ");
-		String searchShopNo = sc.nextLine();
+		 conn = MyConnection.getConnection();
+		 try {
+			 psmt = conn.prepareStatement(sql);
+			 psmt.executeUpdate();
+			 System.out.println();
+			 System.out.println("메뉴가 삭제되었습니다!");
+			
+		 } catch (SQLException e) {
 
-		System.out.println("MENU_NO를 입력하세요: ");
-		String searchMenuNo = sc.nextLine();
-
-		try {
-			conn = MyConnection.getConnection();
-
-			String sql = "SELECT * FROM MENU WHERE SHOP_NO = ? AND MENU_NO = ?";
-
-			PreparedStatement stmt = conn.prepareStatement(sql);
-			stmt.setString(1, searchShopNo);
-			stmt.setString(2, searchMenuNo);
-			ResultSet rs = stmt.executeQuery();
-
-			if (rs.next()) {
-				System.out.println("메뉴 정보:");
-				System.out.println("SHOP_NO: " + rs.getString("SHOP_NO"));
-				System.out.println("MENU_NO: " + rs.getString("MENU_NO"));
-				System.out.println("MENU_NAME: " + rs.getString("MENU_NAME"));
-				System.out.println("MENU_CONTENT: " + rs.getString("MENU_CONTENT"));
-				System.out.println("MENU_STATE: " + rs.getBoolean("MENU_STATE"));
-
-				System.out.println("정말로 메뉴를 삭제하시겠습니까? (Y/N)");
-				String confirmation = sc.nextLine();
-
-				if (confirmation.equalsIgnoreCase("Y")) {
-					sql = "DELETE FROM MENU WHERE SHOP_NO = ? AND MENU_NO = ?";
-
-					PreparedStatement deleteStmt = conn.prepareStatement(sql);
-					deleteStmt.setString(1, searchShopNo);
-					deleteStmt.setString(2, searchMenuNo);
-					int rowsAffected = deleteStmt.executeUpdate();
-
-					if (rowsAffected > 0) {
-						System.out.println("메뉴가 삭제되었습니다.");
-					} else {
-						System.out.println("메뉴 삭제에 실패했습니다.");
-					}
-				}
-			} else {
-				System.out.println("메뉴 삭제가 취소되었습니다.");
-			}
-
-			rs.close();
-
-		} catch (ClassNotFoundException | SQLException e) {
-			e.printStackTrace();
-		} finally {
-			MyConnection.close(rs, psmt, conn);
-		}
+		 }finally {
+			 getAllMenus(shop_no);
+			 menu_list.clear();
+			 MyConnection.close(rs, psmt, conn);
+		 }
+		
 	}
 
 	public static void exitProgram() {
