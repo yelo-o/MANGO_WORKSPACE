@@ -44,7 +44,7 @@ public class CusRepository
 	static Scanner sc = new Scanner(System.in); 
 	
 	
-	public static void cusAllShopList() {
+	public static void cusAllShopList() throws ClassNotFoundException, SQLException {
 		String search_shop = "select * from shop where shop_state = '1'";
 		Connection con = null;
 		ResultSet rs = null;
@@ -52,17 +52,7 @@ public class CusRepository
 		int counter = 1;
 		shop_list = new ArrayList<Shop>();
 		
-		try {
-			Class.forName("oracle.jdbc.driver.OracleDriver");
-			con = DriverManager.getConnection(url, id, pw);
-
-		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		con= MyConnection.getConnection();
 		try {
 			psmt = con.prepareStatement(search_shop);
 			psmt.executeQuery();
@@ -95,7 +85,7 @@ public class CusRepository
 		shop_list.clear();
 		return shop_no;
 	}
-	public static void cusCategoryShopList() {
+	public static void cusCategoryShopList() throws ClassNotFoundException, SQLException {
 		
 		Connection con = null;
 		ResultSet rs = null;
@@ -126,16 +116,7 @@ public class CusRepository
 			System.out.println("카테고리 번호를 입력해주세요.");
 		}
 		String categoryList = "select * from shop where shop_state = '1' and shop_type='"+shoptype+"'";
-		try {
-			Class.forName("oracle.jdbc.driver.OracleDriver");
-			con = DriverManager.getConnection(url, id, pw);
-		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		con= MyConnection.getConnection();
 		try {
 			psmt = con.prepareStatement(categoryList);
 			psmt.executeQuery();
@@ -161,7 +142,7 @@ public class CusRepository
 		}
 	}
 	
-	public static void cusRateHighShopList() {
+	public static void cusRateHighShopList() throws ClassNotFoundException, SQLException {
 		String search_shop = "SELECT s.shop_no, s.shop_name, s.shop_content, s.shop_type, AVG(sr.rating) AS avg_rating FROM shop s JOIN shop_review sr ON s.shop_no = sr.shop_no GROUP BY s.shop_no, s.shop_name, s.shop_content, s.shop_type ORDER BY avg_rating DESC, s.shop_name DESC";
 		Connection con = null;
 		ResultSet rs = null;
@@ -169,17 +150,7 @@ public class CusRepository
 		int counter = 1;
 		shop_list = new ArrayList<Shop>();
 		
-		try {
-			Class.forName("oracle.jdbc.driver.OracleDriver");
-			con = DriverManager.getConnection(url, id, pw);
-
-		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		con= MyConnection.getConnection();
 		try {
 			psmt = con.prepareStatement(search_shop);
 			psmt.executeQuery();
@@ -207,7 +178,7 @@ public class CusRepository
 			MyConnection.close(rs, psmt, con);
 		}
 	}
-	public static void cusSearchShop() {
+	public static void cusSearchShop() throws ClassNotFoundException, SQLException {
 		
 		Connection con = null;
 		ResultSet rs = null;
@@ -219,17 +190,9 @@ public class CusRepository
 		String str= sc.nextLine();
 		
 		String search_shop = "select * from shop where shop_state = '1' and shop_name like '%"+str+"%'";
-		try {
-			Class.forName("oracle.jdbc.driver.OracleDriver");
-			con = DriverManager.getConnection(url, id, pw);
-
-		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		
+		con= MyConnection.getConnection();
+		
 		try {
 			psmt = con.prepareStatement(search_shop);
 			psmt.executeQuery();
