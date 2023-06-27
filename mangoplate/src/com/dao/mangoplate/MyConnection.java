@@ -10,7 +10,7 @@ public class MyConnection {
 	public static Connection getConnection() throws ClassNotFoundException, SQLException {
 		Class.forName("oracle.jdbc.OracleDriver");
 		Connection conn = null;
-		String url = "jdbc:oracle:thin:@192.168.0.30:1521/xe";
+		String url = "jdbc:oracle:thin:@192.168.0.3:1521/xe";
 		String user = "kosta";
 		String password = "kosta";
 		

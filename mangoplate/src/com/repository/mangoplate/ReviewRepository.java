@@ -101,7 +101,7 @@ public class ReviewRepository {
 				String reviewContent = rs.getString("review_content");
 				Date reviewDate = rs.getDate("review_date");
 				int reviewRating = rs.getInt("rating");
-				System.out.printf("%-10s%-15s%-12s%-20s%-40s\n", reviewNo, reviewWriter, reviewRating, reviewDate, reviewContent);
+				System.out.printf("%-10s%-15s%-12s%-20s%-40s\n",reviewNo, reviewWriter, reviewRating, reviewDate, reviewContent);
 				count++;
 			}
 		} catch (SQLException e) {

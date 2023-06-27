@@ -146,8 +146,10 @@ public class MenuController {
 				rs = psmt.executeQuery();
 				System.out.println();
 				System.out.println("해당 상점의 메뉴 목록:");
-				System.out.println("메뉴이름\t메뉴설명\t판매상태");
-				System.out.println("------------------------------------------------------");
+//				System.out.println("메뉴이름\t메뉴설명\t판매상태");
+				System.out.printf("%-20s%-30s%-10s\n", "메뉴이름", "메뉴설명", "판매상태");
+//				System.out.printf("%-10s%-15s%-12s%-20s%-40s\n", "리뷰번호", "작성자", "별점", "작성일자", "리뷰 내용");
+				System.out.println("--------------------------------------------------------------------------------------------");
 				while (rs.next()) {
 					int shopNo = rs.getInt("SHOP_NO");
 					int menuNo = rs.getInt("MENU_NO");
@@ -156,15 +158,18 @@ public class MenuController {
 					int menuState = rs.getInt("MENU_STATE");
 					Menu menu = new Menu(shop_no,menuNo,menuName,menuContent,menuState);
 					menu_list.add(menu);
+					
 					if(menuState == 1) {
-						System.out.println(counter +"번째 메뉴 " +menuName+ "\t"+ menuContent+ "\t"+ "핀매중");
+//						System.out.println(counter +"번째 메뉴 " +menuName+ "\t"+ menuContent+ "\t"+ "핀매중");
+						System.out.printf("%-20s%-30s%-10s\n", menuName, menuContent, "판매중");
 						counter++;
-						}else if(menuState==0){
-							System.out.println(counter +"번째 메뉴 "+menuName +"\t"+ menuContent+"\t" + "핀매중지");
-							counter++;
-						}
+					}else if(menuState==0){
+//						System.out.println(counter +"번째 메뉴 "+menuName +"\t"+ menuContent+"\t" + "핀매중지");
+						System.out.printf("%-20s%-30s%-10s\n", menuName, menuContent, "판매중지");
+						counter++;
+					}
 				}
-				System.out.println("------------------------------------------------------");
+				System.out.println("--------------------------------------------------------------------------------------------");
 			} catch (SQLException e) {
 				System.out.println("메뉴 조회 중 오류가 발생했습니다: " + e.getMessage());
 			}
