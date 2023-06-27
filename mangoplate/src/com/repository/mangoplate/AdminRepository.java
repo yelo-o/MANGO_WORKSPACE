@@ -19,9 +19,6 @@ public class AdminRepository {
 	List<Shop>shop_list;
 
 	List<List<String>> tableData =new ArrayList<>();
-	static String url = "jdbc:oracle:thin:@localhost:1521:xe";
-	static String id = "kosta";
-	static String pw = "kosta";
 	String shop_no;
 	String shop_name;
 	int shop_state;
@@ -136,7 +133,7 @@ public class AdminRepository {
 		}finally {
 			MyConnection.close(rs, psmt, con);
 		}
-
+		UserController.admin_menu(); 
 	}
 
 
