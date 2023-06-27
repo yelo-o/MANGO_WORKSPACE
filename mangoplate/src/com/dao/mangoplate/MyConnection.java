@@ -11,8 +11,8 @@ public class MyConnection {
 		Class.forName("oracle.jdbc.OracleDriver");
 		Connection conn = null;
 		String url = "jdbc:oracle:thin:@localhost:1521/xe";
-		String user = "localmg";
-		String password = "localmg";
+		String user = "localyl";
+		String password = "localyl";
 		
 		conn = DriverManager.getConnection(url, user, password);
 		return conn;
